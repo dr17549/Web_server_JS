@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  h1 Log In
+
+  form(action="." method="POST")
+    div.form-group
+      label(for="name") Username:
+      input#name.form-control(
+        type="text"
+        name="name"
+        placeholder="John Smith"
+      )
+
+    div.form-group
+      label(for="email") Email:
+      input#email.form-control(
+        type="email"
+        name="email"
+        placeholder="john.smith@email.com"
+      )
+
+    input.btn.btn-primary(type="submit" value="Log In")
