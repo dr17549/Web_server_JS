@@ -23,6 +23,10 @@ router.get('/', (req, res) => {
     res.render('stories', { title: 'Graphite', stories: 'active'});
   });
 
+  router.get('/new_story', (req, res) => {
+    res.render('new_story', { title: 'Graphite', stories: 'active'});
+  });
+
   router.get('/graphs', (req, res) => {
     res.render('graphs', { title: 'Graphite', graphs: 'active'});
   });

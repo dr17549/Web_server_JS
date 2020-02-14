@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "nodemon ./start.js"
+    "watch": "nodemon ./start.js",
+    "postinstall": "cp -R node_modules/@fortawesome/fontawesome-free/webfonts ./public/"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.12.1",
     "@popperjs/core": "^2.0.5",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.4.1",
