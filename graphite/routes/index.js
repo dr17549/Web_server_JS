@@ -29,7 +29,7 @@ router.get('/new_story', (req, res) => {
 
 router.post('/new_story', (req, res) => {
   console.log(req.body);
-  res.render('new_story', { title: 'Graphite', stories: 'active'});
+  res.render('stories', { title: 'Graphite', stories: 'active', created: "created"});
 });
 
 router.get('/graphs', (req, res) => {
