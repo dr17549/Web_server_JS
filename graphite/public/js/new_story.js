@@ -27,6 +27,8 @@ $("#accordionForm").on("click", ".addchapter", function() {
           <div class="form-group"><label for="characters${chapters}">Characters:</label><textarea class="form-control" id="characters${chapters}" rows="3"></textarea></div>
       </div>
     </div>`);
+    $("#collapseall").html("Collapse All");
+    collapse = true;
 });
 
 $("#accordionForm").on("click", ".delchapter", function(event) {
