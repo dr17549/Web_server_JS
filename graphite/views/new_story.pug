@@ -2,42 +2,44 @@ extends layout
 
 block content
   h1 Create a New Story
-  form(action="." method="POST")
+  button#collapseall.btn.btn-primary(type='button' style="margin-bottom: 0.5em") Collapse All
+  form(action="/new_story" method="POST")
     #accordionForm.accordion
-      .card
-        #headingZero.card-header
-          h2.mb-0
-            button.btn.btn-link(type='button' data-toggle='collapse' data-target='#collapseZero' aria-expanded='true' aria-controls='collapseZero') Title Information
-        #collapseZero.collapse.show(aria-labelledby='headingZero' data-parent='#accordionForm')
-          .card-body
-            div.form-group
-              label(for="title") Title:
-              input#title.form-control(
-                type="text"
-                name="title"
-                placeholder="A Book"
-              )
-            div.form-group
-              label(for="wordcount") Wordcount/Runtime:
-              input#wordcount.form-control(
-                type="number"
-                name="wordcount"
-                placeholder=80000
-              )
+      div.form-group
+        label(for="title") Title:
+        input#title.form-control(
+          type="text"
+          name="title"
+          placeholder="A Book"
+        )
+      div.form-group
+        label(for="wordcount") Wordcount/Runtime:
+        input#wordcount.form-control(
+          type="number"
+          name="wordcount"
+          placeholder=80000
+        )
+
       .card
         #heading1.card-header
-          h2.mb-0
-            button.btn.btn-link.collapsed(type='button' data-toggle='collapse' data-target='#collapse1' aria-expanded='false' aria-controls='collapse1') Chapter 1
-          //button.btn.btn-link.collapsed(type='button') [delete]
-        #collapse1.collapse(aria-labelledby='heading1' data-parent='#accordionForm')
-          .card-body
-            div.form-group
-              label(for="name1") Chapter Name:
+          .d-inline-flex.justify-content-start
+            button#del1.delchapter.btn.btn-outline-danger(type="button") -
+          .d-inline-flex.justify-content-center
               input#name1.form-control(
                 type="text"
                 name="name1"
                 placeholder="Chapter 1"
+                value="Chapter 1"
+                style="width:90%"
+                data-toggle='collapse'
+                data-target='#collapse1'
+                aria-expanded='false'
+                aria-controls='collapse1'
               )
+          .d-inline-flex.justify-content-end
+            button#add1.addchapter.btn.btn-outline-primary(type="button") +
+        #collapse1.collapse.show(aria-labelledby='heading1')
+          .card-body
             div.form-group
               label(for="size1") Wordcount/Runtime:
               input#size1.form-control(
@@ -48,9 +50,34 @@ block content
             div.form-group
               label(for='characters1') Characters:
               textarea#characters1.form-control(rows='3')
-            button#del1.delchapter.btn.btn-outline-danger(type="button",style="margin-right:0.5em") -
-            button#add1.addchapter.btn.btn-outline-primary(type="button") +
+
     .form-group(style="margin-top:0.5em")
       a.btn.btn-danger(href="/new_story", role="button", style="margin-right:0.5em") Cancel
-      button.btn.btn-success(type='button') Save
+      button.btn.btn-success(type='submit') Save
+  
+  #delconfirm.modal(tabindex='-1' role='dialog')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Delete Chapter
+          button.close(type='button' data-dismiss='modal' aria-label='Close')
+            span(aria-hidden='true') &times;
+        .modal-body
+          p Are you sure you want to delete this chapter?
+        .modal-footer
+          button#delyes.btn.btn-danger(type='button' data-dismiss='modal') Yes
+          button.btn.btn-secondary(type='button' data-dismiss='modal') No
+
+  #minchapter.modal(tabindex='-1' role='dialog')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Error
+          button.close(type='button' data-dismiss='modal' aria-label='Close')
+            span(aria-hidden='true') &times;
+        .modal-body
+          p A story must have at least one chapter.
+        .modal-footer
+          button.btn.btn-secondary(type='button' data-dismiss='modal') Okay
+
   script(src='/js/new_story.js')
