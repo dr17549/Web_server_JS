@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
 const bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "static")));
 
@@ -17,6 +19,7 @@ db.once("open", () => console.log("connected to database"));
 
 //telling express that it needs to use json
 app.use(express.json());
+app.use(cookieParser());
 app.set("view engine", "pug");
 
 //tells the server that when it receives the routes, it must come to this path for what todo

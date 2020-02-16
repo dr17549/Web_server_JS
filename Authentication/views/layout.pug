@@ -13,11 +13,13 @@ html(lang="en")
       h5.my-0.mr-md-auto.font-weight-normal
         a(href="/", title="Expresso") okta-express-login-portal
       nav.my-2.my-md-0.mr-md-3
-        a.p-2.text-dark(href="/", title="Home") Home
+        a.p-2.text-dark(href="/user_session/", title="Home") Home
 
         if user == undefined
-          a.p-2.text-dark(href="/user_session/login") Log In / Register
+          a.p-2.text-dark(href="/user_session/login") Log In
+          a.p-2.text-dark(href="/user_session/register") Register
         else
+          a.p-2.text-dark(href="/user_session/login") Profile : #{user.email}
           a.p-2.text-dark(href="/user_session/logout") Logout
     .container
       block content

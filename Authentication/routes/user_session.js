@@ -1,17 +1,18 @@
 const express = require("express");
 const router = express.Router();
+const session = require("express-session");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
 // Create one subscriber
-router.post("/", async (req, res) => {
+router.post("/register", async (req, res) => {
   const user = new User({
     email: req.body.email,
     password: req.body.password
   });
   try {
     const newUser = await user.save();
-    res.status(201).json(newUser);
+    res.redirect("/user_session/profile");
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -29,6 +30,10 @@ router.get("/", async (req, res) => {
   res.render("index");
 });
 
+router.get("/register", async (req, res) => {
+  res.render("register");
+});
+
 router.get("/all", async (req, res) => {
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
@@ -40,14 +45,14 @@ router.get("/all", async (req, res) => {
   }
 });
 
-router.get("/logout", function(req, res, next) {
+router.get("/logout", async (req, res) => {
   if (req.session) {
     // delete session object
     req.session.destroy(function(err) {
       if (err) {
         return next(err);
       } else {
-        return res.redirect("/user_session/");
+        res.render("login");
       }
     });
   }
@@ -62,7 +67,9 @@ async function requiresLogin(req, res, next) {
     return next();
   } else {
     var err = new Error("You must be logged in to view this page.");
-    err.status = 401;
+    res.render("error", {
+      message: "Error : You must be logged in to view this page."
+    });
     return next(err);
   }
 }
@@ -87,7 +94,7 @@ async function authenticateUser(req, res, next) {
       });
     req.session.user = user;
     // res.status(200).send("Login successfully");
-    res.redirect("/user_session/profile")
+    res.redirect("/user_session/profile");
   });
   // req.session.user = user;
   //allows the code to move on to the next part of the code
