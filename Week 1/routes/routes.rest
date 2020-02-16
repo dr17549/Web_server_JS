@@ -1,27 +1,28 @@
 
-GET http://localhost:3000/subscribers/5e46cbba64d5452e777664b2
+GET http://localhost:3000/user_session/profile
+
 ###
-GET http://localhost:3000/subscribers
+GET http://localhost:3000/user_session/all
 
 ### 
 
-POST http://localhost:3000/subscribers
+POST http://localhost:3000/user_session
 Content-Type: application/json
 
 {
-  "name": "",
-  "subscribedChannel": "Bennetts Channel"
+  "email": "PPOO@gmail.com",
+  "password": "0011223344"
 }
 
 ###
 
-DELETE http://localhost:3000/subscribers/5e46cbba64d5452e777664b2
-
-###
-
-PATCH http://localhost:3000/subscribers/5e46c6951bfa472cb5af0e5a
-Content-Type: application/json 
+POST http://localhost:3000/user_session/login
+Content-Type: application/json
 
 {
-  "name": "John"
+  "email": "PPOO@gmail.com",
+  "password": "0011223344"
 }
+
+###
+GET http://localhost:3000/user_session/profile
