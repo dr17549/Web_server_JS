@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/login", authenticateUser, async (req, res) => {
-  if (req.session.user) res.redirect("/profile");
+  // res.render("index");
 });
 
 router.get("/login", async (req, res) => {
@@ -40,9 +40,6 @@ router.get("/all", async (req, res) => {
   }
 });
 
-router.get("/profile", requiresLogin, async (req, res) => {
-  res.render("dasboard");
-});
 router.get("/logout", function(req, res, next) {
   if (req.session) {
     // delete session object
@@ -50,10 +47,14 @@ router.get("/logout", function(req, res, next) {
       if (err) {
         return next(err);
       } else {
-        return res.redirect("/");
+        return res.redirect("/user_session/");
       }
     });
   }
+});
+
+router.get("/profile", requiresLogin, async (req, res) => {
+  res.render("dashboard");
 });
 
 async function requiresLogin(req, res, next) {
@@ -69,8 +70,14 @@ async function requiresLogin(req, res, next) {
 async function authenticateUser(req, res, next) {
   //Mongo reads the JSON stores as object directly
   user = await User.findOne({ email: req.body.email });
+  if (req.body.email == null) {
+    return res.status(404).json({ message: req.body });
+  }
   if (user == null) {
     return res.status(404).json({ message: "Cant find USER" });
+  }
+  if (req.body.password == null) {
+    return res.status(400).json({ messsage: "Password cannot be null" });
   }
   user.comparePassword(req.body.password, (err, isMatch) => {
     if (err) throw err;
@@ -78,9 +85,11 @@ async function authenticateUser(req, res, next) {
       return res.status(400).json({
         message: "Wrong password"
       });
-    res.status(200).send("Login successfully");
+    req.session.user = user;
+    // res.status(200).send("Login successfully");
+    res.redirect("/user_session/profile")
   });
-  req.session.user = user;
+  // req.session.user = user;
   //allows the code to move on to the next part of the code
   next();
 }

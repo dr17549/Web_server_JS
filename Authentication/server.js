@@ -5,7 +5,8 @@ const app = express();
 const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
-const Mongostore = 
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "static")));
 
 //connect to mongoose
@@ -22,9 +23,6 @@ app.set("view engine", "pug");
 // in GET, POST, UPDATE methods
 // const subscribersRouter = require('./routes/subscribers')
 // app.use('/subscribers', subscribersRouter)
-
-const userRouter = require("./routes/user_session");
-app.use("/user_session", userRouter);
 app.use(
   session({
     secret: "my-secret",
@@ -32,5 +30,8 @@ app.use(
     saveUninitialized: false
   })
 );
+
+const userRouter = require("./routes/user_session");
+app.use("/user_session", userRouter);
 
 app.listen(3000, () => console.log("server started"));
