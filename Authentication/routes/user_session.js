@@ -62,6 +62,10 @@ router.get("/profile", requiresLogin, async (req, res) => {
   res.render("dashboard");
 });
 
+router.get("/graph", async (req, res) => {
+  res.render("graph");
+});
+
 async function requiresLogin(req, res, next) {
   if (req.session.user) {
     return next();

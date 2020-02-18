@@ -1,0 +1,4 @@
+[
+  { "name": "Andy Hunt", "title": "Big", "age": 68, "bonus": 11 },
+  { "name": "Charles Mack", "title": "Jr Dev", "age": 24, "bonus": 1 }
+]

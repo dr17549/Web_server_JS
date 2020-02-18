@@ -16,6 +16,8 @@ mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 const db = mongoose.connection;
 db.on("error", error => console.error(error));
 db.once("open", () => console.log("connected to database"));
+app.use("/d3", express.static(__dirname + "/node_modules/d3/dist"));
+app.use(express.static("public"));
 
 //telling express that it needs to use json
 app.use(express.json());
@@ -36,5 +38,5 @@ app.use(
 
 const userRouter = require("./routes/user_session");
 app.use("/user_session", userRouter);
-
+app.use("/static", express.static("public"));
 app.listen(3000, () => console.log("server started"));
