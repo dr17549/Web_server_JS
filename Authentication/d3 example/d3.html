@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://d3js.org/d3.v5.js"></script>
+    <script>
+      // const color = require("color");
+      const fs = require("fs");
+      console.log(d3);
+
+      //   try {
+      //     if (fs.existsSync(path)) {
+      //       alert("FOUND!");
+      //       //file exists
+      //     }
+      //   } catch (err) {
+      //     alert("ERROR");
+      //     console.error(err);
+      //   }
+
+      if (fs.exists("./colors.js") == true) {
+        //console.log('/public/images/flags/' + imgfile + ".png");
+        console.log("fs exists");
+      } else {
+        console.log("Not Found!");
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <title>D3 Example</title>
+    <svg width="500" height="500">
+      <rect x="0" y="0" width="300" height="200" fill="yellow"></rect>
+    </svg>
+  </head>
+  <body>
+    <script src="./color.js"></script>
+    <p>First paragraph</p>
+    <p>Second paragraph</p>
+  </body>
+</html>

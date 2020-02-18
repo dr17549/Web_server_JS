@@ -1,0 +1,28 @@
+
+GET http://localhost:3000/user_session/profile
+
+###
+GET http://localhost:3000/user_session/all
+
+### 
+
+POST http://localhost:3000/user_session
+Content-Type: application/json
+
+{
+  "email": "test@gmail.com",
+  "password": "0011223344"
+}
+
+###
+
+POST http://localhost:3000/user_session/login
+Content-Type: application/json
+
+{
+  "email": "test@gmail.com",
+  "password": "0011223344"
+}
+
+###
+GET http://localhost:3000/user_session/profile
