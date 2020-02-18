@@ -66,6 +66,10 @@ router.get("/graph", async (req, res) => {
   res.render("graph");
 });
 
+router.get("/force_directed", async (req, res) => {
+  res.render("force_directed");
+});
+
 async function requiresLogin(req, res, next) {
   if (req.session.user) {
     return next();
