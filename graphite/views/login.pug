@@ -4,20 +4,12 @@ block content
   h1 Log In
 
   form(action="/login" method="POST")
+    if message
+      .alert.alert-danger(role="alert")= message
     div.form-group
-      label(for="name") Username:
-      input#name.form-control(
-        type="text"
-        name="name"
-        placeholder="John Smith"
-      )
-
+      label(for='email') Email:
+      input#email.form-control(type='email', placeholder='name@email.com' name='email')
     div.form-group
-      label(for="email") Email:
-      input#email.form-control(
-        type="email"
-        name="email"
-        placeholder="john.smith@email.com"
-      )
-
-    input.btn.btn-primary(type="submit" value="Log In")
+      label(for='pw') Password:
+      input#pw.form-control(type='password' name='password' placeholder='password')
+    button.btn.btn-primary(type='submit') Log In
