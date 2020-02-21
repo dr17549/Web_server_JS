@@ -44,7 +44,6 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", authenticateUser, async (req, res) => {
-  res.render("index", { title: 'Graphite', home: 'active', user: req.session.user});
 });
 
 router.get("/login", async (req, res) => {
@@ -98,13 +97,28 @@ async function requiresLogin(req, res, next) {
 }
 
 async function authenticateUser(req, res, next) {
+  console.log("beginning of function");
+  if (!req.body.email) {
+    console.log("first one");
+    res.render("login", {
+      title: "Graphite",
+      login: "active",
+      message: "Please enter an email."
+    });
+    return res.status(404).json({ message: "Please enter an email." });
+  }
+  if (!req.body.password) {
+    console.log("first one");
+    res.render("login", {
+      title: "Graphite",
+      login: "active",
+      message: "Please enter a password."
+    });
+    return res.status(404).json({ message: "Please enter a password." });
+  }
   //Mongo reads the JSON stores as object directly
   user = await User.findOne({ email: req.body.email });
-  if (req.body.email == null) {
-    console.log("first one");
-    return res.status(404).json({ message: req.body });
-  }
-  if (user == null) {
+    if (user == null) {
     console.log("second one");
     res.render("login", {
       title: "Graphite",
@@ -113,26 +127,23 @@ async function authenticateUser(req, res, next) {
     });
     return res.status(404).json({ message: "Unknown user." });
   }
-  if (req.body.password == null) {
-    console.log("third one");
-    res.render("login", {
-      title: "Graphite",
-      login: "active",
-      message: "Please enter a password."
-    });
-    return res.status(400).json({ messsage: "Please enter a password." });
-  }
   user.comparePassword(req.body.password, (err, isMatch) => {
-    console.log("fourth one");
     if (err) throw err;
-    if (!isMatch)
-      return res.status(400).json({
-        message: "Wrong password"
+    if (!isMatch) {
+      return res.render("login", {
+        title: "Graphite",
+        login: "active",
+        message: "Wrong password."
       });
+      // return res.status(400).json({
+      //   message: "Wrong password"
+      // });
+    }
+    req.session.user = user;
+    // res.status(200).send("Login successfully");
+    res.redirect("/");
   });
-  req.session.user = user;
-  console.log("Logged in with " + user);
-  //res.status(200).send("Login successfully");
+  // req.session.user = user;
   //allows the code to move on to the next part of the code
   next();
 }
