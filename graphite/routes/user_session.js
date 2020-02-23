@@ -29,6 +29,10 @@ router.get('/graphs', requiresLogin, (req, res) => {
 res.render('graphs', { title: 'Graphite', graphs: 'active', user: req.session.user});
 });
 
+router.get('/force_directed', (req, res) => {
+  res.render('force_directed');
+  });
+
 // Create one subscriber
 router.post("/register", async (req, res) => {
   const user = new User({
