@@ -2,8 +2,12 @@ doctype html
 html
   head
     title= `${title || "Graphite"}`
-    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
     link(rel='stylesheet', href='/css/styles.css')
+    link(rel='stylesheet', href='/fontawesome/css/fontawesome.css')
+    script(src='/jquery/jquery.js')
+    script(src='/popper.js/dist/popper.js')
+    script(src='/bootstrap/js/bootstrap.js')
 
   body
     nav.navbar.navbar-expand-lg.navbar-light.bg-light
@@ -14,14 +18,23 @@ html
       
       div#navbarToggler.collapse.navbar-collapse
         ul.navbar-nav.mr-auto.mt-2.mt-lg-0
-          li.nav-item(class=`${login || ""}`)
-            a.nav-link(href = '/login') Log In
-          li.nav-item(class=`${stories || ""}`)
-            a.nav-link(href = '/stories') My Stories
-          li.nav-item(class=`${graphs || ""}`)
-            a.nav-link(href = '/graphs') My Graphs
-          li.nav-item(class=`${account || ""}`)
-            a.nav-link(href = '/account') My Account
+          if user
+            li.nav-item(class=`${stories || ""}`)
+              a.nav-link(href = '/stories') My Stories
+            li.nav-item(class=`${graphs || ""}`)
+              a.nav-link(href = '/graphs') My Graphs
+            li.nav-item(class=`${account || ""}`)
+              a.nav-link(href = '/account') My Account
+            li.nav-item
+              a.nav-link(href = '/logout') Log Out
+          else
+            li.nav-item(class=`${login || ""}`)
+              a.nav-link(href = '/login') Log In
+      
+      if user
+        p(style="margin-bottom:0")= `${user.email || "Please log in."}`
+      else
+        p(style="margin-bottom:0") Please log in.
 
     div.container
       block content
