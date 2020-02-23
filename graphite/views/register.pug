@@ -5,6 +5,8 @@ block content
 
   // register form
   form(method='POST' action='/register')
+    if message
+      .alert.alert-danger(role="alert")= message
     div.form-group
       label(for='email') Email:
       input#email.form-control(type='email', placeholder='name@email.com' name='email')

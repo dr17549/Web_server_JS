@@ -39,6 +39,11 @@ router.post("/register", async (req, res) => {
     const newUser = await user.save();
     res.redirect("/", { title: 'Graphite', home: 'active', user: req.session.user});
   } catch (err) {
+    res.render("register", {
+      title: "Graphite",
+      login: "active",
+      message: err.message
+    });
     res.status(400).json({ message: err.message });
   }
 });
