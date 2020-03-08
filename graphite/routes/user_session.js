@@ -4,34 +4,71 @@ const session = require("express-session");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
-router.get('/', (req, res) => {
-  res.render('index', { title: 'Graphite', home: 'active', user: req.session.user});
-});
-
-router.get('/account', requiresLogin, (req, res) => {
-res.render('account', { title: 'Graphite', account: 'active', user: req.session.user});
-});
-
-router.get('/stories', requiresLogin, (req, res) => {
-res.render('stories', { title: 'Graphite', stories: 'active', user: req.session.user});
-});
-
-router.get('/new_story', requiresLogin, (req, res) => {
-res.render('new_story', { title: 'Graphite', stories: 'active', user: req.session.user});
-});
-
-router.post('/new_story', requiresLogin, (req, res) => {
-console.log(req.body);
-res.render('stories', { title: 'Graphite', stories: 'active', created: "created", user: req.session.user});
-});
-
-router.get('/graphs', requiresLogin, (req, res) => {
-res.render('graphs', { title: 'Graphite', graphs: 'active', user: req.session.user});
-});
-
-router.get('/force_directed', (req, res) => {
-  res.render('force_directed');
+router.get("/", (req, res) => {
+  res.render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user
   });
+});
+
+router.get("/account", requiresLogin, (req, res) => {
+  res.render("account", {
+    title: "Graphite",
+    account: "active",
+    user: req.session.user
+  });
+});
+
+router.get("/stories", requiresLogin, (req, res) => {
+  res.render("stories", {
+    title: "Graphite",
+    stories: "active",
+    user: req.session.user
+  });
+});
+
+router.get("/new_story", requiresLogin, (req, res) => {
+  res.render("new_story", {
+    title: "Graphite",
+    stories: "active",
+    user: req.session.user
+  });
+});
+
+router.post("/new_story", requiresLogin, (req, res) => {
+  console.log(req.body);
+  res.render("stories", {
+    title: "Graphite",
+    stories: "active",
+    created: "created",
+    user: req.session.user
+  });
+});
+
+router.get("/graphs", requiresLogin, (req, res) => {
+  res.render("graphs", {
+    title: "Graphite",
+    graphs: "active",
+    user: req.session.user
+  });
+});
+
+router.get("/force_directed", (req, res) => {
+  res.render("force_directed");
+});
+
+router.get("/tidy_tree", (req, res) => {
+  res.render("tidy_tree");
+});
+
+router.get("/collapse_tree", (req, res) => {
+  res.render("collapse_tree");
+});
+
+router.get("/bar_chart", (req, res) => {
+  res.render("bar_chart");
+});
 
 // Create one subscriber
 router.post("/register", async (req, res) => {
@@ -41,7 +78,11 @@ router.post("/register", async (req, res) => {
   });
   try {
     const newUser = await user.save();
-    res.redirect("/", { title: 'Graphite', home: 'active', user: req.session.user});
+    res.redirect("/", {
+      title: "Graphite",
+      home: "active",
+      user: req.session.user
+    });
   } catch (err) {
     res.render("register", {
       title: "Graphite",
@@ -52,22 +93,33 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login", authenticateUser, async (req, res) => {
-});
+router.post("/login", authenticateUser, async (req, res) => {});
 
 router.get("/login", async (req, res) => {
-  res.render("login", { title: 'Graphite', login: 'active', user: req.session.user});
+  res.render("login", {
+    title: "Graphite",
+    login: "active",
+    user: req.session.user
+  });
 });
 
 router.get("/", async (req, res) => {
-  res.redirect("/", { title: 'Graphite', home: 'active', user: req.session.user});
+  res.redirect("/", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user
+  });
 });
 
 router.get("/register", async (req, res) => {
-  res.render("register", { title: 'Graphite', login: 'active', user: req.session.user});
+  res.render("register", {
+    title: "Graphite",
+    login: "active",
+    user: req.session.user
+  });
 });
 
-router.get("/all", async (req, res) => {
+router.get("/all", requiresLogin, async (req, res) => {
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
     const users = await User.find();
@@ -85,7 +137,7 @@ router.get("/logout", async (req, res) => {
       if (err) {
         return next(err);
       } else {
-        res.render("login", { title: 'Graphite', login: 'active', user: null});
+        res.render("login", { title: "Graphite", login: "active", user: null });
       }
     });
     console.log(req.session.user);
@@ -127,7 +179,7 @@ async function authenticateUser(req, res, next) {
   }
   //Mongo reads the JSON stores as object directly
   user = await User.findOne({ email: req.body.email });
-    if (user == null) {
+  if (user == null) {
     console.log("second one");
     res.render("login", {
       title: "Graphite",

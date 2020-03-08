@@ -1,0 +1,8 @@
+extends layout 
+
+block content
+    link(rel='stylesheet', href='/css/bar_chart.css')
+    //- div#viz
+    svg#viz(width="960", height="600")
+    script(src='/d3/d3.js')
+    script(src='/js/bar_chart.js')
