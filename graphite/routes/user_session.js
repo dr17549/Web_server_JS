@@ -3,6 +3,7 @@ const router = express.Router();
 const session = require("express-session");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
 
 router.get("/", (req, res) => {
   res.render("index", {
@@ -78,11 +79,14 @@ router.post("/register", async (req, res) => {
   });
   try {
     const newUser = await user.save();
-    res.redirect("/", {
-      title: "Graphite",
-      home: "active",
-      user: req.session.user
-    });
+    res.redirect(
+      {
+        title: "Graphite",
+        home: "active",
+        user: req.session.user
+      },
+      "/"
+    );
   } catch (err) {
     res.render("register", {
       title: "Graphite",
@@ -103,12 +107,90 @@ router.get("/login", async (req, res) => {
   });
 });
 
-router.get("/", async (req, res) => {
-  res.redirect("/", {
+router.get("/forget_password", async (req, res) => {
+  res.render("forget_password", {
     title: "Graphite",
-    home: "active",
+    login: "active",
     user: req.session.user
   });
+});
+
+router.post("/forget_password", async (req, res) => {
+  user = await User.findOne({ email: req.body.email });
+  res.user = user;
+  console.log(res.user);
+  if (user == null) {
+    return res
+      .status(404)
+      .json({ message: "User not found! please enter a valid email" });
+  } else {
+    //create random string
+    var randomstring = Math.random()
+      .toString(36)
+      .slice(-8);
+    if (req.body.email != null) {
+      res.user.email = req.body.email;
+    }
+    res.user.password = randomstring;
+    try {
+      // this is not working
+      const updateuser = await res.user.save();
+    } catch (err) {
+      res.status(400).json({ message: err.message });
+    }
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "graphite.website.official@gmail.com",
+        pass: "graphiteabc123"
+      }
+    });
+    var mailOptions = {
+      from: "graphite.website.official@gmail.com",
+      to: req.body.email,
+      subject: "Reset Passsword",
+      text: "Please use this password to Login : " + randomstring
+    };
+
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        res.redirect(
+          {
+            title: "Graphite",
+            home: "active"
+          },
+          "/"
+        );
+      }
+    });
+  }
+});
+
+async function getUser(req, res, next) {
+  try {
+    user = await User.findById(req.params.id);
+    if (subscriber == null) {
+      return res.status(404).json({ message: "Cant find subscriber" });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+
+  res.subscriber = subscriber;
+  next();
+}
+
+router.get("/", async (req, res) => {
+  res.redirect(
+    {
+      title: "Graphite",
+      home: "active",
+      user: req.session.user
+    },
+    "/"
+  );
 });
 
 router.get("/register", async (req, res) => {
