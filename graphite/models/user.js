@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
+const Counter = require("./counter");
+
 const userSchema = mongoose.Schema({
   email: {
     type: String,
@@ -12,11 +14,20 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
     minlength: 6
+  },
+  user_ID: {
+    type: Number,
+    default: 0
   }
 });
 
 userSchema.pre("save", function(next) {
-  var user = this;
+  let user = this;
+  Counter.findByIdAndUpdate({_id: 'userID'}, {$inc: { seq: 1} }, function(error, Counter) {
+    if(error) return next(error);
+    user.user_ID = Counter.seq;
+    next();
+  });
   bcrypt.hash(user.password, 10, function(err, hash) {
     if (err) {
       return next(err);

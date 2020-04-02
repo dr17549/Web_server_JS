@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1 Create a New Graph
+  if message
+      .alert.alert-danger(role="alert")= message
+  if data
+    p= "graph ID = " + story_ID + " json = " + JSON.stringify(data)
+
+  script(type="text/javascript") let data = !{JSON.stringify(data)}
+//-   script(src='/js/new_graph.js')
