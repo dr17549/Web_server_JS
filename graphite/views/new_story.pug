@@ -93,5 +93,5 @@ block content
         .modal-footer
           button.btn.btn-secondary(type='button' data-dismiss='modal') Okay
 
-  script(type="text/javascript") let data = !{JSON.stringify(data)}
+  script(type="text/javascript") let data = !{data ? JSON.stringify(data) : "{}"}
   script(src='/js/new_story.js')

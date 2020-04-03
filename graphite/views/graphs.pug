@@ -19,8 +19,8 @@ block content
           .tab-pane.fade(class=`${index == 0 ? "show active" : ""}` id = `${"list-" + val.name}` role="tabpanel" aria-labelledby=`${"list-" + val.name + "-list"}`)
             img.img-fluid(src=`${"/img/" + val.name + ".jpg"}` alt=`${val.name + " image"}` style="max-width:50%")
             p= val.description
-            a.btn.btn-primary(href="/new_graph", role="button", style="margin-bottom: 0.5rem") New Graph from Template
-  h2 Edit an Existing Graph
+            a.btn.btn-primary.newgraph(id=`${"template" + val.template_ID}` role="button", style="margin-bottom: 0.5rem") New Graph from Template
+  h2(style="margin-top: 0.5rem") Edit an Existing Graph
   if data != ""
     form(action="/graphs" method="POST")
       ul.list-group
@@ -34,3 +34,27 @@ block content
               button.btn.btn-outline-primary.editbutton(id="edit" + val.graph_ID, type="submit", style="margin-left: 0.5rem") Edit
   else
     p You have no graphs yet!
+
+  #selectstory.modal(tabindex='-1' role='dialog')
+    .modal-dialog(role='document')
+      .modal-content
+        .modal-header
+          h5.modal-title Select a Story
+          button.close(type='button' data-dismiss='modal' aria-label='Close')
+            span(aria-hidden='true') &times;
+        .modal-body
+          p Select a story to add to your graph.
+          if storyData != ""
+            form(action="/new_graph" method="POST")
+              .form-group
+                label(for="storyList") Your stories:
+                select#storyList.form-control(name="storyList")
+                  each val in storyData
+                    option(value=`${val.story_ID}`)= JSON.parse(val.story).title
+          else
+            p You have no stories yet!
+        .modal-footer
+          button#storyyes.btn.btn-success(type='button' data-dismiss='modal') Continue
+          button.btn.btn-danger(type='button' data-dismiss='modal') Cancel
+
+  script(src='/js/graphs.js')

@@ -5,7 +5,11 @@ block content
   if message
       .alert.alert-danger(role="alert")= message
   if data
-    p= "graph ID = " + story_ID + " json = " + JSON.stringify(data)
+    p= "templateData = " + templateData
+    p= "data = " + data
+  .card.cardbody
+    h2= templateData[0].name + " graph for " + JSON.parse(data[0].story).title
+    p A beautiful graph!
 
-  script(type="text/javascript") let data = !{JSON.stringify(data)}
+  script(type="text/javascript") let data = !{JSON.stringify(data[0].story)}
 //-   script(src='/js/new_graph.js')

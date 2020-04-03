@@ -129,8 +129,19 @@ router.post('/new_story', requiresLogin, async (req, res) => {
 router.get('/graphs', requiresLogin, async (req, res) => {
   const graphs = await Graph.find({user_ID: req.session.user.user_ID});
   const templates = await Template.find();
+  const stories = await Story.find({user_ID: req.session.user.user_ID});
 
-  res.render('graphs', { title: 'Graphite', graphs: 'active', user: req.session.user, data: graphs, templateData: templates});
+  res.render('graphs', { title: 'Graphite', graphs: 'active', user: req.session.user, data: graphs, templateData: templates, storyData: stories});
+});
+
+router.post('/new_graph/:template', requiresLogin, async (req, res) => {
+  console.log("STORY ID: " + req.body.storyList);
+  console.log("TEMPLATE ID: " + req.params.template);
+
+  const templates = await Template.find({template_ID: req.params.template});
+  const stories = await Story.find({story_ID: req.body.storyList});
+
+  res.render('new_graph', { title: 'Graphite', graphs: 'active', user: req.session.user, data: stories, templateData: templates});
 });
 
 router.get("/new_graph", requiresLogin, async (req, res) => {
