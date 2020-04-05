@@ -1,6 +1,9 @@
 body {
-    background-color: #eee;
     text-align: center;
+    background-image: url("/img/tree.png");
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-attachment: fixed;
   }
 
 div.container {

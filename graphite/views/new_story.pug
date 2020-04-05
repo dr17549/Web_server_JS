@@ -2,8 +2,18 @@ extends layout
 
 block content
   h1 Create a New Story
+  if message
+      .alert.alert-danger(role="alert")= message
+  //- if data
+  //-   p= "story ID = " + story_ID + " json = " + JSON.stringify(data)
   button#collapseall.btn.btn-primary(type='button' style="margin-bottom: 0.5em") Collapse All
   form(action="/new_story" method="POST")
+    input#story_ID(
+        type="number"
+        name="story_ID"
+        value= `${story_ID || story_ID == 0 ? story_ID : -1}`
+        style="visibility: hidden; display: none"
+      )
     #accordionForm.accordion
       div.form-group
         label(for="title") Title:
@@ -11,6 +21,7 @@ block content
           type="text"
           name="title"
           placeholder="A Book"
+          value= `${data ? data.title : ""}`
         )
       div.form-group
         label(for="wordcount") Wordcount/Runtime:
@@ -18,6 +29,7 @@ block content
           type="number"
           name="wordcount"
           placeholder=80000
+          value= `${data ? data.wordcount : ""}`
         )
 
       .card
@@ -29,12 +41,12 @@ block content
                 type="text"
                 name="name1"
                 placeholder="Chapter 1"
-                value="Chapter 1"
                 style="width:90%;"
                 data-toggle='collapse'
                 data-target='#collapse1'
                 aria-expanded='false'
                 aria-controls='collapse1'
+                value= `${data ? data.name1 : "Chapter 1"}`
               )
           .d-inline-flex.justify-content-end
             button#add1.addchapter.btn.btn-outline-primary(type="button") +
@@ -46,13 +58,14 @@ block content
                 type="number"
                 name="size1"
                 placeholder=2500
+                value= `${data ? data.size1 : ""}`
               )
             div.form-group
               label(for='characters1') Characters:
-              textarea#characters1.form-control(rows='3')
+              input#characters1.form-control(type="text", data-role="tagsinput", name="characters1", value= `${data ? data.characters1 : ""}`)
 
     .form-group(style="margin-top:0.5em")
-      a.btn.btn-danger(href="/new_story", role="button", style="margin-right:0.5em") Cancel
+      a.btn.btn-danger(href="/stories", role="button", style="margin-right:0.5em") Cancel
       button.btn.btn-success(type='submit') Save
   
   #delconfirm.modal(tabindex='-1' role='dialog')
@@ -80,4 +93,5 @@ block content
         .modal-footer
           button.btn.btn-secondary(type='button' data-dismiss='modal') Okay
 
+  script(type="text/javascript") let data = !{data ? JSON.stringify(data) : "{}"}
   script(src='/js/new_story.js')

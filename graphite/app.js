@@ -14,6 +14,7 @@ app.use(express.static(path.join(__dirname, "static")));
 app.use(express.static('public'));
 app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist/'));
 app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/'));
+app.use('/bootstrap-tagsinput', express.static(__dirname + '/node_modules/bootstrap4-tagsinput//'));
 app.use('/popper.js', express.static(__dirname + '/node_modules/popper.js/dist/'));
 app.use('/fontawesome', express.static(__dirname + '/@fortawesome/fontawesome-free'));
 app.use("/d3", express.static(__dirname + "/node_modules/d3/dist"));
