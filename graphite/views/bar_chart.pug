@@ -1,0 +1,33 @@
+extends layout 
+
+block content
+  h1 Bar Graph
+  button(onclick="changeColor('red')") Red Scale 
+  button(onclick="changeColor('blue')") Blue Scale
+  button(onclick="changeColor('green')") Green Scale
+  button(onclick="changeColor('random')") Random Scale
+  form(method='POST' action='/save_bar_chart')
+    if message
+      .alert.alert-danger(role="alert")= message
+    div.form-group
+      label(for='color') Color:
+      input#save_color.form-control(type='text' name='color' value="random")
+    div.form-group
+      label(for='story_id') Story ID:
+      input#save_color.form-control(type='number' name='story_id' value=story_ID, readonly=true)
+    div.form-group
+      label(for='graph_id') Graph ID:
+    input#save_color.form-control(type='number' name='graph_id' value=graph_ID, readonly=true)
+    div.form-group
+      label(for='template_id') Template ID:
+    input#save_color.form-control(type='number' name='template_id' value=template_ID, readonly=true)
+    button.btn.btn-primary(type='submit') Save Graph
+  svg#viz(width="960", height="600")
+  if data
+    script(type="text/javascript") let json_data = !{JSON.stringify(data[0].story)}
+  else
+    p Data not defined, please reload from home page!
+  script(src='/d3/d3.js')
+  script(src='/js/oop_bar_graph.js')
+  
+  

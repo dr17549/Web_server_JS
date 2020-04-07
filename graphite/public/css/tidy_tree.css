@@ -1,0 +1,18 @@
+body {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #000;
+}
+
+.border {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #aaa;
+}
+
+.node {
+  stroke: #fff;
+}
