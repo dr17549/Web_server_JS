@@ -20,14 +20,11 @@ router.get("/", (req, res) => {
 
 // Graphs Zen
 router.post("/graphs", async (req, res) => {
-  // console.log(req.body);
-  if (req.body.graph_ID < 0) {
-  }
-  console.log(req.body);
   const templates = await Template.find({
     template_ID: req.body.template_ID,
   });
   const stories = await Story.find({ story_ID: req.body.story_ID });
+  const graph = await Graph.find({ graph_ID: req.body.graph_ID });
 
   // console.log(stories);
   // console.log(req.body.story_ID);
@@ -46,6 +43,7 @@ router.post("/graphs", async (req, res) => {
       template_ID: req.body.template_ID,
       templateData: templates,
       graph_ID: req.body.graph_ID,
+      options: graph[0].options,
     });
   } else {
     res.render("new_graph", {
@@ -82,8 +80,8 @@ router.get("/bar_chart", requiresLogin, (req, res) => {
 router.post("/save_bar_chart", async (req, res) => {
   console.log(req.body.graph_id);
   if (req.body.graph_id >= 0) {
-    console.log("Editing" + req.body.graph_id);
-    console.log("COLOR : " + req.body.color);
+    // console.log("Editing" + req.body.graph_id);
+    // console.log("COLOR : " + req.body.color);
     Graph.findOneAndUpdate(
       { graph_ID: req.body.graph_id },
       { options: req.body.color },
@@ -354,6 +352,7 @@ router.post("/new_graph/:template", requiresLogin, async (req, res) => {
       graph_ID: -1,
       template_ID: req.params.template,
       templateData: templates,
+      options: "random",
     });
   } else {
     res.render("new_graph", {

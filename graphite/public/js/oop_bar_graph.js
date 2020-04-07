@@ -73,11 +73,11 @@ var initBarGraph = {
         return height;
       })
       .attr("height", 0)
-      .transition()
-      .duration(750)
-      .delay(function (d, i) {
-        return i * 150;
-      })
+      // .transition()
+      // .duration(750)
+      // .delay(function (d, i) {
+      //   return i * 150;
+      // })
       .attr("y", (d) => {
         return y(d.value);
       })
@@ -121,6 +121,9 @@ var initBarGraph = {
         return y(d.value) + 0.1;
       })
       .attr("dy", "-.7em");
+
+    console.log(color_options);
+    changeColor(color_options);
   },
 };
 // has to change
