@@ -7,8 +7,10 @@ $(".newgraph").on("click", function (event) {
 });
 
 $("#storyyes").click(function () {
-  document.forms[1].action += "/" + template;
-  document.forms[1].submit();
+  document.getElementById("new_graph").action += "/" + template;
+  document.getElementById("new_graph").submit();
+  // document.forms[1].action += "/" + template;
+  // document.forms[1].submit();
 });
 
 $('[id^="edit"]').click(function () {
