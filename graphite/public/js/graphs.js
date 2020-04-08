@@ -7,7 +7,6 @@ $(".newgraph").on("click", function (event) {
 });
 
 $("#storyyes").click(function () {
-  console.log(document.forms);
   document.forms[1].action += "/" + template;
   document.forms[1].submit();
 });
