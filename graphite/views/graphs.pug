@@ -62,7 +62,7 @@ block content
         .modal-body
           p Select a story to add to your graph.
           if storyData != ""
-            form(action="/new_graph" method="POST")
+            form(action="/new_graph" method="POST" id='new_graph')
               .form-group
                 label(for="storyList") Your stories:
                 select#storyList.form-control(name="storyList")
