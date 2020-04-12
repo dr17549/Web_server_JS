@@ -1,4 +1,5 @@
-let template = 01;
+let template = -1;
+
 $(".newgraph").on("click", function (event) {
   let id = event.target.id;
   let match = /template([0-9]+)/.exec(id);
@@ -13,20 +14,28 @@ $("#storyyes").click(function () {
   // document.forms[1].submit();
 });
 
-$('[id^="edit"]').click(function () {
+$(".editbutton").on("click", function(event) {
   let id = event.target.id;
   let match = /edit([0-9]+)/.exec(id);
-  let graph_id = match[1];
-
-  for (data in graph_data) {
-    if (graph_data[data].graph_ID == graph_id) {
-      console.log(graph_data[data]);
-      document.getElementById("user_id").value = graph_data[data].user_ID;
-      document.getElementById("story_id").value = graph_data[data].story_ID;
-      document.getElementById("template_id").value =
-        graph_data[data].template_ID;
-      document.getElementById("graph_id").value = graph_data[data].graph_ID;
-      document.getElementById("options").value = graph_data[data].options;
-    }
-  }
+  let story = match[1];
+  document.forms[0].action += '/edit/' + story;
+  return true;
 });
+
+$(".deletebutton").on("click", function(event) {
+  $('#delconfirm').modal('show');
+  let id = event.target.id;
+  let match = /del([0-9]+)/.exec(id);
+  story = match[1];
+});
+
+$("#delyes").click(function() {
+  document.forms[0].action += '/delete/' + story;
+  document.forms[0].submit();
+});
+
+window.setTimeout(function() {
+  $(".alert").fadeTo(500, 0).slideUp(500, function(){
+      $(this).remove(); 
+  });
+}, 2000);

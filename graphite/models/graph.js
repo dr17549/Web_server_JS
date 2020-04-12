@@ -18,6 +18,10 @@ const GraphSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    name: {
+      type: String,
+      default: "untitled graph"
+    },
     options: {
         type: String,
         required: true

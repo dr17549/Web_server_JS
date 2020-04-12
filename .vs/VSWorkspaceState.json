@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\graphite",
+    "\\graphite\\public",
+    "\\graphite\\public\\css",
+    "\\graphite\\routes",
+    "\\graphite\\views"
+  ],
+  "SelectedNode": "\\graphite\\views\\new_story.pug",
+  "PreviewInSolutionExplorer": false
+}

@@ -4,12 +4,67 @@ block content
   h1 Create a New Graph
   if message
       .alert.alert-danger(role="alert")= message
-  if data
-    p= "templateData = " + templateData
-    p= "data = " + data
-  .card.cardbody
-    h2= templateData[0].name + " graph for " + JSON.parse(data[0].story).title
-    p A beautiful graph!
+  //- if data
+  //-   p= "templateData = " + templateData
+  //-   p= "data = " + data
+  form(action="/new_graph" method="POST")
+    input#story_ID(name="story_ID" type="number" value=`${data[0].story_ID}` style="visibility: hidden; display: none")
+    input#template_ID(name="template_ID" type="number" value=`${templateData[0].template_ID}` style="visibility: hidden; display: none")
+    input#graph_ID(name="graph_ID" type="number" value=`${graphData ? graphData[0].graph_ID : -1}` style="visibility: hidden; display: none")
+    .card(style="margin-bottom: 0.5rem")
+      .card-header
+        .d-inline-flex.justify-content-center
+          input#name.form-control.form-control-lg(name="name" type="text" value=`${graphData ? graphData[0].name : templateData[0].name + " graph for " + JSON.parse(data[0].story).title}`)
+      .card-body
+        h3(style="margin-top: 1rem") Data:
+        .row.align-items-center
+          .col
+            .d-inline-flex.justify-content-center
+              .form-group.form-inline
+                label(for="#dataSelect" style="margin-right: 0.5rem") Data: 
+                select#dataSelect.form-control
+                  option(name="size" value='size') Size
+        .row.align-items-center
+          .col
+            #viz(width="960", height="600")
 
-  script(type="text/javascript") let data = !{JSON.stringify(data[0].story)}
-//-   script(src='/js/new_graph.js')
+        h3(style="margin-top: 1rem") Options:
+        .row.align-items-center
+          .col
+            .d-inline-flex.justify-content-center
+              .form-group.form-inline
+                label(for="#colourSelect" style="margin-right: 0.5rem") Colour: 
+                select#colourSelect.form-control(name="colourSelect")
+                  option(name="default" value="default") Default
+                  option(name="red" value='red') Red
+                  option(name="blue" value='blue') Blue
+                  option(name="green" value='green') Green
+                  option(name="random" value='random') Random
+        .row.align-items-center
+          .col
+            .d-inline-flex.justify-content-center
+              .form-group.form-inline
+                label(for="#xAxisTitle" style="margin-right: 0.5rem") X Axis Title:
+                input#xAxisTitle.form-control(type="text" placeholder="X Axis" style="margin-right: 0.5rem")
+                label(for="#yAxisTitle" style="margin-right: 0.5rem") Y Axis Title:
+                input#yAxisTitle.form-control(type="text" placeholder="Y Axis")
+        .row.align-items-center
+          .col
+            .d-inline-flex.justify-content-center
+              p Axis labels/ticks etc
+        .row.align-items-center
+          .col
+            .d-inline-flex.justify-content-center
+              p Bar widths/spacing etc
+        
+      .card-footer
+        .form-group(style="margin-top:0.5em")
+          a.btn.btn-danger(href="/graphs", role="button", style="margin-right:0.5em") Cancel
+          button.btn.btn-success(type='submit', style="margin-right:0.5em") Save
+          button.btn.btn-outline-success(type='button') Save As
+        .form-group(style="margin-top:0.5em; margin-bottom:0.5rem")
+          button.btn.btn-primary(type='button') Download as .PNG
+
+  script(type="text/javascript") let data = !{JSON.stringify(data[0].story)}; let template = !{JSON.stringify(templateData[0])}; let graph = !{graphData ? JSON.stringify(graphData[0]) : "{}"};
+  script(src="/js/bar.js")
+  script(src="/js/new_graph.js")

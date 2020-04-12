@@ -330,6 +330,56 @@ router.get("/graphs", requiresLogin, async (req, res) => {
   });
 });
 
+router.post("/graphs/:function/:id", requiresLogin, async (req, res) => {
+  if (req.params.function == "edit") {
+    try {
+      // Mongoose method works by returning all associated subscriber objects that meet its criteria.
+      const graph = await Graph.find({ graph_ID: req.params.id });
+
+      const templates = await Template.find({ template_ID: graph[0].template_ID });
+      const stories = await Story.find({ story_ID: graph[0].story_ID });
+
+      //return the ^
+      res.render("new_graph", {
+        title: "Graphite",
+        graphs: "active",
+        data: stories,
+        templateData: templates,
+        graphData: graph,
+        user: req.session.user,
+      });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  } else if (req.params.function == "delete") {
+    Graph.findOneAndDelete({ graph_ID: req.params.id }, function (err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+        //res.send(result);
+      }
+    });
+    console.log("graph deleted!");
+    try {
+      const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
+      const templates = await Template.find();
+      const stories = await Story.find({ user_ID: req.session.user.user_ID });
+      // console.log(graphs);
+      res.render("graphs", {
+        title: "Graphite",
+        graphs: "active",
+        user: req.session.user,
+        data: graphs,
+        templateData: templates,
+        storyData: stories,
+        created: "deleted"
+      });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+});
+
 router.post("/new_graph/:template", requiresLogin, async (req, res) => {
   console.log("STORY ID: " + req.body.storyList);
   console.log("TEMPLATE ID: " + req.params.template);
@@ -340,21 +390,21 @@ router.post("/new_graph/:template", requiresLogin, async (req, res) => {
 
   console.log(stories);
   var graph_type = templates[0].name;
-  if (graph_type.localeCompare("force_directed") == 0) {
-    res.render("force_directed");
-  } else if (graph_type.localeCompare("bar") == 0) {
-    res.render("bar_chart", {
-      title: "Graphite",
-      graphs: "active",
-      user: req.session.user,
-      story_ID: req.body.storyList,
-      data: stories,
-      graph_ID: -1,
-      template_ID: req.params.template,
-      templateData: templates,
-      options: "random",
-    });
-  } else {
+  // if (graph_type.localeCompare("force_directed") == 0) {
+  //   res.render("force_directed");
+  // } else if (graph_type.localeCompare("bar") == 0) {
+  //   res.render("bar_chart", {
+  //     title: "Graphite",
+  //     graphs: "active",
+  //     user: req.session.user,
+  //     story_ID: req.body.storyList,
+  //     data: stories,
+  //     graph_ID: -1,
+  //     template_ID: req.params.template,
+  //     templateData: templates,
+  //     options: "random",
+  //   });
+  // } else {
     res.render("new_graph", {
       title: "Graphite",
       graphs: "active",
@@ -363,7 +413,7 @@ router.post("/new_graph/:template", requiresLogin, async (req, res) => {
       template_ID: req.params.template,
       templateData: templates,
     });
-  }
+  // }
 });
 
 router.get("/new_graph", requiresLogin, async (req, res) => {
@@ -372,6 +422,64 @@ router.get("/new_graph", requiresLogin, async (req, res) => {
     graphs: "active",
     user: req.session.user,
   });
+});
+
+router.post("/new_graph", requiresLogin, async (req, res) => {
+  console.log(req.body);
+  let options = {
+    "colour": req.body.colourSelect,
+  };
+
+  if (req.body.graph_ID >= 0) {
+    Graph.findOneAndUpdate(
+      { graph_ID: req.body.graph_ID },
+      { options: JSON.stringify(options) },
+      function (err, result) {
+        if (err) {
+          res.send(err);
+        } else {
+          //res.send(result);
+        }
+      }
+    );
+    console.log("graph updated!");
+  } else {
+    const graph = new Graph({
+      user_ID: req.session.user.user_ID,
+      story_ID: req.body.story_ID,
+      template_ID: req.body.template_ID,
+      name: req.body.name,
+      options: JSON.stringify(options),
+    });
+    try {
+      const newGraph = await graph.save();
+      //res.redirect('/stories', { title: 'Graphite', stories: 'active', user: req.session.user});
+    } catch (err) {
+      res.render("new_graph", {
+        title: "Graphite",
+        stories: "active",
+        message: err.message,
+      });
+      res.status(400).json({ message: err.message });
+    }
+  }
+  try {
+    const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
+    const templates = await Template.find();
+    const stories = await Story.find({ user_ID: req.session.user.user_ID });
+    // console.log(graphs);
+    res.render("graphs", {
+      title: "Graphite",
+      graphs: "active",
+      user: req.session.user,
+      data: graphs,
+      templateData: templates,
+      storyData: stories,
+      created: req.body.graph_ID >= 0 ? "updated" : "created",
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 router.get("/force_directed", (req, res) => {

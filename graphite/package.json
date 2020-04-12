@@ -27,7 +27,8 @@
     "nodemailer": "^6.4.6",
     "popper": "^1.0.1",
     "popper.js": "^1.16.1",
-    "pug": "^2.0.4"
+    "pug": "^2.0.4",
+    "requirejs": "^2.3.6"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
