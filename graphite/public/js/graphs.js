@@ -1,7 +1,7 @@
 let template = -1;
 
 $(".newgraph").on("click", function (event) {
-  let id = event.target.id;
+  let id = $(event.target).closest('a')[0].id;
   let match = /template([0-9]+)/.exec(id);
   template = match[1];
   $("#selectstory").modal("show");
@@ -15,7 +15,7 @@ $("#storyyes").click(function () {
 });
 
 $(".editbutton").on("click", function(event) {
-  let id = event.target.id;
+  let id = $(event.target).closest('button')[0].id;
   let match = /edit([0-9]+)/.exec(id);
   let story = match[1];
   document.forms[0].action += '/edit/' + story;
@@ -24,7 +24,7 @@ $(".editbutton").on("click", function(event) {
 
 $(".deletebutton").on("click", function(event) {
   $('#delconfirm').modal('show');
-  let id = event.target.id;
+  let id = $(event.target).closest('button')[0].id;
   let match = /del([0-9]+)/.exec(id);
   story = match[1];
 });

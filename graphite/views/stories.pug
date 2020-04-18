@@ -5,18 +5,22 @@ block content
   p Here you can view and edit the data files you use to generate the graphs. :)
   if created
     .alert.alert-success(role="alert")= (created == "created" ? "New story " : "Story ") + created + "!"
-  a.btn.btn-primary(href="/new_story", role="button", style="margin-bottom: 0.5rem") New Story
+  a.btn.btn-primary(href="/new_story", role="button", style="margin-bottom: 0.5rem") New Story 
+    i.far.fa-file-alt
   if data != ""
     form(action="/stories" method="POST")
       ul.list-group
         each val in data
           li.list-group-item
-            .d-inline-flex.justify-content-start
-              button.btn.btn-outline-danger.deletebutton(id="del" + val.story_ID, type="button", style="margin-right: 0.5rem") Delete
-            .d-inline-flex.justify-content-center
-              p= JSON.parse(val.story).title
-            .d-inline-flex.justify-content-end
-              button.btn.btn-outline-primary.editbutton(id="edit" + val.story_ID, type="submit", style="margin-left: 0.5rem") Edit
+            .d-flex.justify-content-between
+              .d-flex
+                button.btn.btn-outline-danger.deletebutton(id="del" + val.story_ID, type="button", style="margin-right: 0.5rem")
+                  i.fas.fa-trash-alt
+              .d-flex.align-items-center
+                p(style="margin-bottom:0")= JSON.parse(val.story).title
+              .d-flex
+                button.btn.btn-outline-primary.editbutton(id="edit" + val.story_ID, type="submit", style="margin-left: 0.5rem")
+                  i.fas.fa-edit
   else
     p You have no stories yet!
             

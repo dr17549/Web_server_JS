@@ -201,7 +201,7 @@ router.get("/account", requiresLogin, (req, res) => {
 router.get("/stories", requiresLogin, async (req, res) => {
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const stories = await Story.find({ user_ID: req.session.user.user_ID });
+    const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
     //return the ^
     res.render("stories", {
       title: "Graphite",
@@ -242,7 +242,7 @@ router.post("/stories/:function/:id", requiresLogin, async (req, res) => {
     console.log("story deleted!");
     try {
       // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-      const stories = await Story.find({ user_ID: req.session.user.user_ID });
+      const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
       //return the ^
       res.render("stories", {
         title: "Graphite",
@@ -272,7 +272,7 @@ router.post("/new_story", requiresLogin, async (req, res) => {
   if (req.body.story_ID >= 0) {
     Story.findOneAndUpdate(
       { story_ID: req.body.story_ID },
-      { story: JSON.stringify(json) },
+      { story: JSON.stringify(json), dateEdited: new Date() },
       function (err, result) {
         if (err) {
           res.send(err);
@@ -301,7 +301,7 @@ router.post("/new_story", requiresLogin, async (req, res) => {
   }
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const stories = await Story.find({ user_ID: req.session.user.user_ID });
+    const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
     //return the ^
     res.render("stories", {
       title: "Graphite",
@@ -318,7 +318,7 @@ router.post("/new_story", requiresLogin, async (req, res) => {
 router.get("/graphs", requiresLogin, async (req, res) => {
   const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
   const templates = await Template.find();
-  const stories = await Story.find({ user_ID: req.session.user.user_ID });
+  const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
   // console.log(graphs);
   res.render("graphs", {
     title: "Graphite",
@@ -363,7 +363,7 @@ router.post("/graphs/:function/:id", requiresLogin, async (req, res) => {
     try {
       const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
       const templates = await Template.find();
-      const stories = await Story.find({ user_ID: req.session.user.user_ID });
+      const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
       // console.log(graphs);
       res.render("graphs", {
         title: "Graphite",
@@ -466,7 +466,7 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
   try {
     const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
     const templates = await Template.find();
-    const stories = await Story.find({ user_ID: req.session.user.user_ID });
+    const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
     // console.log(graphs);
     res.render("graphs", {
       title: "Graphite",

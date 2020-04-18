@@ -24,6 +24,9 @@ block content
                 label(for="#dataSelect" style="margin-right: 0.5rem") Data: 
                 select#dataSelect.form-control
                   option(name="size" value='size') Size
+                  option(name="characters" value='characters') Characters Per Chapter
+                  option(name="mentions" value='mentions') Mentions Per Chapter
+                  option(name="extra" value='extra') Extra Per Chapter
         .row.align-items-center
           .col
             #viz(width="960", height="600")
@@ -59,9 +62,12 @@ block content
         
       .card-footer
         .form-group(style="margin-top:0.5em")
-          a.btn.btn-danger(href="/graphs", role="button", style="margin-right:0.5em") Cancel
-          button.btn.btn-success(type='submit', style="margin-right:0.5em") Save
-          button.btn.btn-outline-success(type='button') Save As
+          a.btn.btn-danger(href="/graphs", role="button", style="margin-right:0.5em") Cancel 
+            i.fas.fa-times
+          button.btn.btn-success(type='submit', style="margin-right:0.5em") Save 
+            i.fas.fa-save
+          button#saveas.btn.btn-outline-success(type='button') Save As 
+            i.fas.fa-save
         .form-group(style="margin-top:0.5em; margin-bottom:0.5rem")
           button.btn.btn-primary(type='button') Download as .PNG
 

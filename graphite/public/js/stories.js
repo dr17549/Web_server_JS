@@ -7,7 +7,7 @@ window.setTimeout(function() {
 }, 2000);
 
 $(".editbutton").on("click", function(event) {
-    let id = event.target.id;
+    let id = $(event.target).closest('button')[0].id;
     let match = /edit([0-9]+)/.exec(id);
     let story = match[1];
     document.forms[0].action += '/edit/' + story;
@@ -16,7 +16,7 @@ $(".editbutton").on("click", function(event) {
 
 $(".deletebutton").on("click", function(event) {
     $('#delconfirm').modal('show');
-    let id = event.target.id;
+    let id = $(event.target).closest('button')[0].id;
     let match = /del([0-9]+)/.exec(id);
     story = match[1];
 });

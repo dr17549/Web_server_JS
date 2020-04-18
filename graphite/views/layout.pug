@@ -5,12 +5,13 @@ html
     link(rel='stylesheet', href='/bootstrap/css/bootstrap.css')
     link(rel='stylesheet', href='/bootstrap-tagsinput/tagsinput.css')
     link(rel='stylesheet', href='/css/styles.css')
-    link(rel='stylesheet', href='/fontawesome/fontawesome.css')
+    link(rel='stylesheet', href='/fontawesome/css/all.css')
     script(src='/jquery/jquery.js')
     script(src='/popper.js/popper.js')
     script(src='/bootstrap/js/bootstrap.js')
     script(src='/bootstrap-tagsinput/tagsinput.js')
     script(src='/d3/d3.js')
+    script(src='/fontawesome/js/all.js')
 
   body
     nav.navbar.navbar-expand-lg.navbar-light.bg-success
@@ -35,6 +36,7 @@ html
               a.nav-link(href = '/login') Log In
       
       if user
+        i.fas.fa-user(style="margin-right:0.5rem")
         p(style="margin-bottom:0")= `${user.email || "Please log in."}`
       else
         p(style="margin-bottom:0") Please log in.

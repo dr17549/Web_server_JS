@@ -29,8 +29,8 @@ var bar = {
           return d.chapter;
         })
       );
-      // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
-      y.domain([0, 10]);
+      y.domain([0, d3.max(dataset,  d => { return d.value; })]);
+      // y.domain([0, 10]);
       //axis label
       svg
         .append("text")
@@ -123,7 +123,7 @@ var bar = {
         .attr("dy", "-.7em");
   
       console.log(options.colour);
-      changeColor(options.colour);
+      if(options.colour) changeColor(options.colour);
     },
   };
   // has to change
