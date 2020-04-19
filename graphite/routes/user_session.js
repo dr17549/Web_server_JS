@@ -58,8 +58,12 @@ router.post("/graphs", async (req, res) => {
   }
 });
 
-router.get("/forget_password", (req, res) => {
+router.get("/forgot_password", (req, res) => {
   res.render("forget_password");
+});
+
+router.get("/reset_password", requiresLogin, (req, res) => {
+  res.render("reset_password");
 });
 
 router.get("/force_directed", (req, res) => {
@@ -118,10 +122,9 @@ router.post("/save_bar_chart", async (req, res) => {
 });
 // END GRAPHS ZEN
 
-router.post("/forget_password", async (req, res) => {
+router.post("/forgot_password", async (req, res) => {
   user = await User.findOne({ email: req.body.email });
   res.user = user;
-  console.log(res.user);
   if (user == null) {
     return res
       .status(404)
@@ -130,12 +133,12 @@ router.post("/forget_password", async (req, res) => {
     //create random string
     var randomstring = Math.random().toString(36).slice(-8);
     if (req.body.email != null) {
-      res.user.email = req.body.email;
+      user.email = req.body.email;
     }
-    res.user.password = randomstring;
+    user.password = randomstring;
     try {
       // this is not working
-      const updateuser = await res.user.save();
+      const updateuser = await user.save();
     } catch (err) {
       res.status(400).json({ message: err.message });
     }
@@ -157,18 +160,58 @@ router.post("/forget_password", async (req, res) => {
       if (error) {
         console.log(error);
       } else {
-        res.redirect(
-          {
-            title: "Graphite",
-            home: "active",
-          },
-          "/"
-        );
+        res.render("index", {
+          title: "Graphite",
+          home: "active",
+          message:
+            "Email sent to your account! Please log-in with the temporary password.",
+        });
       }
     });
   }
 });
 
+router.post("/reset_password", requiresLogin, async (req, res) => {
+  user = await User.findOne({ email: req.session.user.email });
+  console.log(user);
+  // res.user.email = req.session.user.email;
+  const password = req.body.password;
+  const confirm_password = req.body.confirm_password;
+  if (password.localeCompare(confirm_password) != 0) {
+    res.render(
+      res.render("reset_password", {
+        title: "Graphite",
+        home: "active",
+        message: "Password not the same! Please try again",
+      })
+    );
+  }
+  try {
+    // const filter = { email: req.session.user.email };
+    // const update = { password: password };
+    // let doc = await User.findOneAndUpdate(filter, update, {
+    //   new: true,
+    // });
+    // console.log(doc.email);
+    // console.log(doc.password);
+    user.password = password;
+    const updateuser = await user.save();
+    console.log(" user - session : " + updateuser.password);
+  } catch (err) {
+    res.render("reset_password", {
+      title: "Graphite",
+      login: "active",
+      message: err.message,
+    });
+    res.status(400).json({ message: err.message });
+  }
+  // if success
+  res.render("index", {
+    title: "Graphite",
+    home: "active",
+    message: "Password reset success!",
+  });
+});
 router.get("/counter", async (req, res) => {
   // const counter = new Counter({
   //   _id: "graphID",
@@ -201,7 +244,9 @@ router.get("/account", requiresLogin, (req, res) => {
 router.get("/stories", requiresLogin, async (req, res) => {
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
+    const stories = await Story.find({
+      user_ID: req.session.user.user_ID,
+    }).sort({ dateEdited: -1 });
     //return the ^
     res.render("stories", {
       title: "Graphite",
@@ -242,7 +287,9 @@ router.post("/stories/:function/:id", requiresLogin, async (req, res) => {
     console.log("story deleted!");
     try {
       // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-      const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
+      const stories = await Story.find({
+        user_ID: req.session.user.user_ID,
+      }).sort({ dateEdited: -1 });
       //return the ^
       res.render("stories", {
         title: "Graphite",
@@ -301,7 +348,9 @@ router.post("/new_story", requiresLogin, async (req, res) => {
   }
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
+    const stories = await Story.find({
+      user_ID: req.session.user.user_ID,
+    }).sort({ dateEdited: -1 });
     //return the ^
     res.render("stories", {
       title: "Graphite",
@@ -318,7 +367,9 @@ router.post("/new_story", requiresLogin, async (req, res) => {
 router.get("/graphs", requiresLogin, async (req, res) => {
   const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
   const templates = await Template.find();
-  const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
+  const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({
+    dateEdited: -1,
+  });
   // console.log(graphs);
   res.render("graphs", {
     title: "Graphite",
@@ -336,7 +387,9 @@ router.post("/graphs/:function/:id", requiresLogin, async (req, res) => {
       // Mongoose method works by returning all associated subscriber objects that meet its criteria.
       const graph = await Graph.find({ graph_ID: req.params.id });
 
-      const templates = await Template.find({ template_ID: graph[0].template_ID });
+      const templates = await Template.find({
+        template_ID: graph[0].template_ID,
+      });
       const stories = await Story.find({ story_ID: graph[0].story_ID });
 
       //return the ^
@@ -363,7 +416,9 @@ router.post("/graphs/:function/:id", requiresLogin, async (req, res) => {
     try {
       const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
       const templates = await Template.find();
-      const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
+      const stories = await Story.find({
+        user_ID: req.session.user.user_ID,
+      }).sort({ dateEdited: -1 });
       // console.log(graphs);
       res.render("graphs", {
         title: "Graphite",
@@ -372,7 +427,7 @@ router.post("/graphs/:function/:id", requiresLogin, async (req, res) => {
         data: graphs,
         templateData: templates,
         storyData: stories,
-        created: "deleted"
+        created: "deleted",
       });
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -405,14 +460,14 @@ router.post("/new_graph/:template", requiresLogin, async (req, res) => {
   //     options: "random",
   //   });
   // } else {
-    res.render("new_graph", {
-      title: "Graphite",
-      graphs: "active",
-      user: req.session.user,
-      data: stories,
-      template_ID: req.params.template,
-      templateData: templates,
-    });
+  res.render("new_graph", {
+    title: "Graphite",
+    graphs: "active",
+    user: req.session.user,
+    data: stories,
+    template_ID: req.params.template,
+    templateData: templates,
+  });
   // }
 });
 
@@ -427,7 +482,7 @@ router.get("/new_graph", requiresLogin, async (req, res) => {
 router.post("/new_graph", requiresLogin, async (req, res) => {
   console.log(req.body);
   let options = {
-    "colour": req.body.colourSelect,
+    colour: req.body.colourSelect,
   };
 
   if (req.body.graph_ID >= 0) {
@@ -466,7 +521,9 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
   try {
     const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
     const templates = await Template.find();
-    const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({ dateEdited: -1});
+    const stories = await Story.find({
+      user_ID: req.session.user.user_ID,
+    }).sort({ dateEdited: -1 });
     // console.log(graphs);
     res.render("graphs", {
       title: "Graphite",
@@ -492,13 +549,10 @@ router.post("/register", async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   });
+  console.log(user);
   try {
     const newUser = await user.save();
-    res.redirect("/", {
-      title: "Graphite",
-      home: "active",
-      user: req.session.user,
-    });
+    console.log(newUser);
   } catch (err) {
     res.render("register", {
       title: "Graphite",
@@ -507,6 +561,25 @@ router.post("/register", async (req, res) => {
     });
     res.status(400).json({ message: err.message });
   }
+  Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (
+    error,
+    Counter
+  ) {
+    if (error) {
+      res.render("register", {
+        title: "Graphite",
+        login: "active",
+        message: err.message,
+      });
+    }
+    user.user_ID = Counter.seq;
+  });
+  req.session.user = user;
+  res.render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+  });
 });
 
 router.post("/login", authenticateUser, async (req, res) => {});
@@ -647,6 +720,10 @@ async function authenticateUser(req, res, next) {
     });
     return res.status(404).json({ message: "Unknown user." });
   }
+  // if (req.body.email.localeCompare("test@test.com") == 0) {
+  //   req.session.user = user;
+  //   res.redirect("/");c
+  // }
   user.comparePassword(req.body.password, (err, isMatch) => {
     if (err) throw err;
     if (!isMatch) {

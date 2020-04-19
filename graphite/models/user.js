@@ -8,37 +8,43 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
     unique: 1,
-    trim: true
+    trim: true,
   },
   password: {
     type: String,
     required: true,
-    minlength: 6
+    minlength: 6,
   },
   user_ID: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
-userSchema.pre("save", function(next) {
+// userSchema.pre("update", function (next) {
+//   bcrypt.hash(this.password, 10, function (err, hash) {
+//     if (err) return next(err);
+//     this.password = hash;
+//     next();
+//   });
+// });
+
+userSchema.pre("save", function (next) {
+  console.log("PRESAVE");
   let user = this;
-  Counter.findByIdAndUpdate({_id: 'userID'}, {$inc: { seq: 1} }, function(error, Counter) {
-    if(error) return next(error);
-    user.user_ID = Counter.seq;
-    next();
-  });
-  bcrypt.hash(user.password, 10, function(err, hash) {
+
+  bcrypt.hash(user.password, 10, function (err, hash) {
     if (err) {
       return next(err);
     }
+    console.log(hash);
     user.password = hash;
     next();
   });
 });
 
-userSchema.statics.authenticate = function(email, password, callback) {
-  user.findOne({ email: email }).exec(function(err, user) {
+userSchema.statics.authenticate = function (email, password, callback) {
+  user.findOne({ email: email }).exec(function (err, user) {
     if (err) {
       return callback(err);
     } else if (!user) {
@@ -46,7 +52,7 @@ userSchema.statics.authenticate = function(email, password, callback) {
       err.status = 401;
       return callback(err);
     }
-    bcrypt.compare(password, user.password, function(err, result) {
+    bcrypt.compare(password, user.password, function (err, result) {
       if (result === true) {
         return callback(null, user);
       } else {
@@ -55,11 +61,11 @@ userSchema.statics.authenticate = function(email, password, callback) {
     });
   });
 };
-userSchema.methods.comparePassword = function(
+userSchema.methods.comparePassword = function (
   candidatePassword,
   checkpassword
 ) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
+  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
     if (err) return checkpassword(err);
     checkpassword(null, isMatch);
   });

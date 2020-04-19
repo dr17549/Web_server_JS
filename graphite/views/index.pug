@@ -3,3 +3,5 @@ extends layout
 block content
   h1 Graphite
   p Welcome to our super amazing website! Woo hoo!
+  if message
+    p(style={color: 'red'}) #{message}

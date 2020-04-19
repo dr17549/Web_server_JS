@@ -31,9 +31,13 @@ html
               a.nav-link(href = '/account') My Account
             li.nav-item
               a.nav-link(href = '/logout') Log Out
+            li.nav-item
+              a.nav-link(href = '/reset_password') Reset Password
           else
             li.nav-item(class=`${login || ""}`)
               a.nav-link(href = '/login') Log In
+            li.nav-item(class=`${account || ""}`)
+              a.nav-link(href = '/forgot_password') Forgot Password
       
       if user
         i.fas.fa-user(style="margin-right:0.5rem")
