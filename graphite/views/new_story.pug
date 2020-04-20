@@ -21,7 +21,7 @@ block content
           type="text"
           name="title"
           placeholder="A Book"
-          value= `${data ? data.title : ""}`
+          value= `${data ? data.title : "New Story"}`
         )
       div.form-group
         label(for="author") Author:
@@ -37,7 +37,7 @@ block content
           type="number"
           name="wordcount"
           placeholder=80000
-          value= `${data ? data.wordcount : ""}`
+          value= `${data ? data.wordcount : "0"}`
         )
       table.table.table-bordered.table-hover.table-light
         thead.thead-light

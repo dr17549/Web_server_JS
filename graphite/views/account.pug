@@ -19,6 +19,9 @@ block content
       placeholder="john.smith@email.com"
       value=`${user.email || ""}`
     )
+
+  p
+    a(href="/reset_password") Reset your password here.
   
   .form-check.form-check-inline
     input#themeLight.form-check-input(type='radio' name='themeOptions' value='light' checked)

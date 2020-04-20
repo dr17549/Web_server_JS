@@ -122,7 +122,6 @@ var bar = {
         })
         .attr("dy", "-.7em");
   
-      console.log(options.colour);
       if(options.colour) changeColor(options.colour);
     },
   };

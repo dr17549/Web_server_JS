@@ -2,6 +2,8 @@ extends layout
 
 block content
   h1 Graphite
-  p Welcome to our super amazing website! Woo hoo!
+  p Graphite is a place where you can create your own data visualisations for pieces of fiction, such as pacing and character co-occurance. Log in and get started!
   if message
-    p(style={color: 'red'}) #{message}
+    .alert.alert-success(role="alert") #{message}
+
+  script(src='/js/index.js')

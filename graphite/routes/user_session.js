@@ -549,6 +549,16 @@ router.post("/register", async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   });
+  Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (error, Counter) {
+    if (error) {
+      res.render("register", {
+        title: "Graphite",
+        login: "active",
+        message: err.message,
+      });
+    }
+    user.user_ID = Counter.seq;
+  });
   console.log(user);
   try {
     const newUser = await user.save();
@@ -561,19 +571,6 @@ router.post("/register", async (req, res) => {
     });
     res.status(400).json({ message: err.message });
   }
-  Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (
-    error,
-    Counter
-  ) {
-    if (error) {
-      res.render("register", {
-        title: "Graphite",
-        login: "active",
-        message: err.message,
-      });
-    }
-    user.user_ID = Counter.seq;
-  });
   req.session.user = user;
   res.render("index", {
     title: "Graphite",
