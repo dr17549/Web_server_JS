@@ -1,5 +1,5 @@
 var force_directed = {
-  draw: function (graph) {
+  draw: function (graph, text_color, node_color) {
     // take out the axis
 
     d3.select("#xAxisTitle")
@@ -41,6 +41,7 @@ var force_directed = {
 
     simulation.force("link").links(graph.links);
 
+    if (options.colour) changeColor(options.colour);
     function ticked() {
       context.clearRect(0, 0, width, height);
 
@@ -54,6 +55,9 @@ var force_directed = {
       context.fill();
       context.strokeStyle = "#fff";
       context.stroke();
+
+      context.beginPath();
+      graph.nodes.forEach(drawLabel);
     }
 
     function inputted() {
@@ -66,9 +70,16 @@ var force_directed = {
       context.lineTo(d.target.x, d.target.y);
     }
 
+    function drawLabel(d) {
+      context.font = "15px Arial";
+      context.fillStyle = text_color;
+      context.fillText(d.id, d.x, d.y - 3);
+      context.fill();
+    }
     function drawNode(d) {
       context.moveTo(d.x + 3, d.y);
-      context.arc(d.x, d.y, 3, 0, 2 * Math.PI);
+      context.fillStyle = node_color;
+      context.arc(d.x, d.y, 6, 0, 2 * Math.PI);
     }
   },
 };

@@ -74,5 +74,6 @@ var horizontal_bar = {
       .style("font-size", "18px")
       .style("text-anchor", "middle")
       .text("Appearance across chapter");
+    if (options.colour) changeColor(options.colour);
   },
 };

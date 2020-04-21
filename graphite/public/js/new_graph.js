@@ -51,7 +51,8 @@ var f_d = get_force_directed_data(display_data);
 if (template.name == "bar") bar.draw(dataset);
 if (template.name == "tree") collapse_tree.draw(treeData);
 if (template.name == "appearance") horizontal_bar.draw(hoz_data);
-if (template.name == "force_directed") force_directed.draw(f_d);
+if (template.name == "force_directed")
+  force_directed.draw(f_d, "Black", "Black");
 
 if (template.name != "force_directed") {
   var canvas = document.querySelector("canvas");
@@ -78,7 +79,7 @@ function get_appearance_data(data) {
             if (found == false) {
               dataset[i] = {};
               dataset[i]["character"] = element;
-              dataset[i]["group"] = key;
+              dataset[i]["value"] = 1;
             }
           });
         }
@@ -159,6 +160,127 @@ function get_force_directed_data(data) {
   for (var i = 0; i < dataset["links"].length; i++) {
     dataset["links"][i]["value"] = max + 1 - dataset["links"][i]["value"];
   }
-  console.log(dataset);
   return dataset;
 }
+
+function changeColor(color) {
+  console.log("Here");
+  if (template.name == "bar") {
+    bar_change_color(color, "rect");
+  }
+  if (template.name == "appearance") {
+    bar_change_color(color, "rect");
+  }
+  if (template.name == "force_directed") {
+    console.log("template force directed");
+    if (color.localeCompare("random") == 0) {
+      const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+      const set_color = "#" + randomColor;
+      const randomNodeColor = Math.floor(Math.random() * 16777215).toString(16);
+      const nodeColor = "#" + randomNodeColor;
+      force_directed.draw(f_d, set_color, nodeColor);
+    }
+    if (color.localeCompare("green") == 0) {
+      force_directed.draw(f_d, "Green", "LimeGreen");
+    }
+    if (color.localeCompare("red") == 0) {
+      force_directed.draw(f_d, "Red", "LightCoral");
+    }
+    if (color.localeCompare("blue") == 0) {
+      force_directed.draw(f_d, "Blue", "Aqua");
+    }
+  }
+}
+
+function bar_change_color(color, select) {
+  //document.getElementById("save_color").value = color;
+  var chosen;
+  if (color.localeCompare("blue") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .style("fill", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(0, 40),
+            getRndInteger(20, 230)
+          )
+        );
+      });
+  } else if (color.localeCompare("red") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .style("fill", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(20, 240),
+            getRndInteger(0, 40),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else if (color.localeCompare("green") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .style("fill", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(20, 240),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else {
+    console.log("random");
+    d3.selectAll(select).transition().duration(2000).style("fill", randomColor);
+  }
+}
+
+function getRndInteger(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+var randomColor = (function () {
+  var golden_ratio_conjugate = 0.618033988749895;
+  var h = Math.random();
+
+  var hslToRgb = function (h, s, l) {
+    var r, g, b;
+
+    if (s == 0) {
+      r = g = b = l; // achromatic
+    } else {
+      function hue2rgb(p, q, t) {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      }
+
+      var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      var p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    return (
+      "#" +
+      Math.round(r * 255).toString(16) +
+      Math.round(g * 255).toString(16) +
+      Math.round(b * 255).toString(16)
+    );
+  };
+
+  return function () {
+    h += golden_ratio_conjugate;
+    h %= 1;
+    return hslToRgb(h, 0.5, 0.6);
+  };
+})();

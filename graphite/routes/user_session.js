@@ -82,7 +82,6 @@ router.get("/bar_chart", requiresLogin, (req, res) => {
   res.render("bar_chart");
 });
 router.post("/save_bar_chart", async (req, res) => {
-  console.log(req.body.graph_id);
   if (req.body.graph_id >= 0) {
     // console.log("Editing" + req.body.graph_id);
     // console.log("COLOR : " + req.body.color);
