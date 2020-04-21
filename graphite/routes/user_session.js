@@ -124,7 +124,6 @@ router.post("/save_bar_chart", async (req, res) => {
 
 router.post("/forgot_password", async (req, res) => {
   user = await User.findOne({ email: req.body.email });
-  res.user = user;
   if (user == null) {
     return res
       .status(404)
@@ -443,7 +442,7 @@ router.post("/new_graph/:template", requiresLogin, async (req, res) => {
   const templates = await Template.find({ template_ID: req.params.template });
   const stories = await Story.find({ story_ID: req.body.storyList });
 
-  console.log(stories);
+  console.log(templates);
   var graph_type = templates[0].name;
   // if (graph_type.localeCompare("force_directed") == 0) {
   //   res.render("force_directed");
@@ -549,7 +548,10 @@ router.post("/register", async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   });
-  Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (error, Counter) {
+  Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (
+    error,
+    Counter
+  ) {
     if (error) {
       res.render("register", {
         title: "Graphite",
@@ -669,7 +671,6 @@ router.get("/logout", async (req, res) => {
         res.render("login", { title: "Graphite", login: "active", user: null });
       }
     });
-    console.log(req.session.user);
   }
 });
 

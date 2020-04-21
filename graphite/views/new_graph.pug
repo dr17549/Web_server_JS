@@ -1,6 +1,9 @@
 extends layout
 
 block content
+  link(rel='stylesheet', href='/css/collapse_tree.css')
+  link(rel='stylesheet', href='/css/oop_horizontal_bar.css')
+  link(rel='stylesheet', href='/css/force_directed.css')
   h1 Create a New Graph
   if message
       .alert.alert-danger(role="alert")= message
@@ -30,6 +33,9 @@ block content
         .row.align-items-center
           .col
             #viz(width="960", height="600")
+                .row.align-items-center
+          .col
+            canvas(width="960", height="600")
 
         h3(style="margin-top: 1rem") Options:
         .row.align-items-center
@@ -54,6 +60,12 @@ block content
         .row.align-items-center
           .col
             .d-inline-flex.justify-content-center
+              .form-group.form-inline
+                label(for="#linkStrength" style="margin-right: 0.5rem") Link Strength:
+                input#linkStrength.form-control(type="range" min="0" max="1" step="any" value="0.5" style="width:240px;")
+        .row.align-items-center
+          .col
+            .d-inline-flex.justify-content-center
               p Axis labels/ticks etc
         .row.align-items-center
           .col
@@ -73,4 +85,7 @@ block content
 
   script(type="text/javascript") let data = !{JSON.stringify(data[0].story)}; let template = !{JSON.stringify(templateData[0])}; let graph = !{graphData ? JSON.stringify(graphData[0]) : "{}"};
   script(src="/js/bar.js")
+  script(src="/js/oop_horizontal_bar.js")
+  script(src="/js/oop_collapse_tree.js")
+  script(src="/js/oop_force_directed.js")
   script(src="/js/new_graph.js")
