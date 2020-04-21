@@ -35,7 +35,7 @@ block content
             #viz(width="960", height="600")
                 .row.align-items-center
           .col
-            canvas(width="960", height="600")
+            canvas(width="960", height="600", id='canvas')
 
         h3(style="margin-top: 1rem") Options:
         .row.align-items-center
@@ -53,9 +53,9 @@ block content
           .col
             .d-inline-flex.justify-content-center
               .form-group.form-inline
-                label(for="#xAxisTitle" style="margin-right: 0.5rem") X Axis Title:
+                label(for="#xAxisTitle" id="xAxisLabel" style="margin-right: 0.5rem") X Axis Title:
                 input#xAxisTitle.form-control(type="text" placeholder="X Axis" style="margin-right: 0.5rem")
-                label(for="#yAxisTitle" style="margin-right: 0.5rem") Y Axis Title:
+                label(for="#yAxisTitle" id ="yAxisLabel" style="margin-right: 0.5rem") Y Axis Title:
                 input#yAxisTitle.form-control(type="text" placeholder="Y Axis")
         .row.align-items-center
           .col

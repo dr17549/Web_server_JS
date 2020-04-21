@@ -1,5 +1,19 @@
 var force_directed = {
   draw: function (graph) {
+    // take out the axis
+
+    d3.select("#xAxisTitle")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#xAxisLabel")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#yAxisTitle")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#yAxisLabel")
+      .style("display", "none")
+      .style("invisbility", "hidden");
     // need this to map the js object to json
     var canvas = document.querySelector("canvas"),
       context = canvas.getContext("2d"),

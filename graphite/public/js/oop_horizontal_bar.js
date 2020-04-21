@@ -9,7 +9,6 @@ var horizontal_bar = {
     var y = d3.scaleBand().range([height, 0]).padding(0.1);
 
     var x = d3.scaleLinear().range([0, width]);
-
     // append the svg object to the body of the page
     // append a 'group' element to 'svg'
     // moves the 'group' element to the top left margin
