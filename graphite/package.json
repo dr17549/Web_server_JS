@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "test" : " mocha", 
     "devStart": "nodemon server.js"
   },
   "keywords": [],
@@ -22,13 +23,15 @@
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "jquery": "^3.4.1",
+    "mocha": "^7.1.2",
     "mongo": "^0.1.0",
     "mongoose": "^5.9.1",
     "nodemailer": "^6.4.6",
     "popper": "^1.0.1",
     "popper.js": "^1.16.1",
     "pug": "^2.0.4",
-    "requirejs": "^2.3.6"
+    "requirejs": "^2.3.6",
+    "selenium-webdriver": "^4.0.0-alpha.7"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",

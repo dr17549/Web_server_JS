@@ -26,14 +26,14 @@ html
             li.nav-item(class=`${stories || ""}`)
               a.nav-link(href = '/stories') My Stories
             li.nav-item(class=`${graphs || ""}`)
-              a.nav-link(href = '/graphs') My Graphs
+              a.nav-link(href = '/graphs' id="mygraphs") My Graphs
             li.nav-item(class=`${account || ""}`)
-              a.nav-link(href = '/account') My Account
+              a.nav-link(href = '/account' id="myaccount") My Account
             li.nav-item
               a.nav-link(href = '/logout') Log Out
           else
             li.nav-item(class=`${login || ""}`)
-              a.nav-link(href = '/login') Log In              
+              a.nav-link(href = '/login' id = "login") Log In              
       
       if user
         i.fas.fa-user(style="margin-right:0.5rem")

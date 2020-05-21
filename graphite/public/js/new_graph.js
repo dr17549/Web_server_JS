@@ -59,6 +59,15 @@ if (template.name != "force_directed") {
   canvas.style.display = "none";
 }
 
+if (template.name == "force_directed") {
+  var viz = document.querySelector("#viz");
+  viz.style.display = "none";
+} else {
+  var canvass = document.querySelector("canvas");
+  canvas.style.display = "none";
+  canvas.style.visibility = "hidden";
+}
+
 function get_appearance_data(data) {
   var dataset = [];
   // console.log(display_data);

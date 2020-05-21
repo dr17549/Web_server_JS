@@ -7,9 +7,6 @@ block content
   h1 Create a New Graph
   if message
       .alert.alert-danger(role="alert")= message
-  //- if data
-  //-   p= "templateData = " + templateData
-  //-   p= "data = " + data
   form(action="/new_graph" method="POST")
     input#story_ID(name="story_ID" type="number" value=`${data[0].story_ID}` style="visibility: hidden; display: none")
     input#template_ID(name="template_ID" type="number" value=`${templateData[0].template_ID}` style="visibility: hidden; display: none")
@@ -30,12 +27,17 @@ block content
                   option(name="characters" value='characters') Characters Per Chapter
                   option(name="mentions" value='mentions') Mentions Per Chapter
                   option(name="extra" value='extra') Extra Per Chapter
-        .row.align-items-center
-          .col
-            #viz(width="960", height="600")
-                .row.align-items-center
-          .col
-            canvas(width="960", height="600", id='canvas')
+        //- .row.align-items-center
+        //-   .col
+        //-     #viz(width="960", height="600")
+        //-         .row.align-items-center
+        //-   .col
+        //-     canvas(width="960", height="600", id='canvas')
+        if templateData[0].template_ID == 0
+          canvas(width="960", height="600", id='canvas')
+        else
+          #viz(width="960", height="600")
+                  .row.align-items-center
 
         h3(style="margin-top: 1rem") Options:
         .row.align-items-center
