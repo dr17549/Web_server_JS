@@ -1,5 +1,7 @@
 let options = graph.options ? JSON.parse(graph.options) : {};
-if (options.colour) $("#colourSelect").val(options.colour);
+if (options.colour) {
+  $("#colourSelect").val(options.colour);
+}
 
 $("#colourSelect").on("change", function () {
   console.log("changing to " + $("#colourSelect").val());
@@ -21,18 +23,6 @@ if (display_data.wordcount && display_data.title) {
   }
 }
 
-// for (key in keys) {
-//   if (
-//     "wordcount".localeCompare(keys[key]) != 0 &&
-//     "title".localeCompare(keys[key]) != 0
-//   ) {
-//     var single = {
-//       chapter: key,
-//       value: display_data[parseInt(keys[key])]["size"],
-//     };
-//     dataset.push(single);
-//   }
-// }
 var treeData = {
   name: "Top Level",
   children: [
@@ -51,21 +41,19 @@ var f_d = get_force_directed_data(display_data);
 if (template.name == "bar") bar.draw(dataset);
 if (template.name == "tree") collapse_tree.draw(treeData);
 if (template.name == "appearance") horizontal_bar.draw(hoz_data);
-if (template.name == "force_directed")
+if (template.name == "force_directed") {
   force_directed.draw(f_d, "Black", "Black");
+  if (options.colour) changeColor(options.colour);
+}
 
+// template fix - e.g. removed canvas if use SVG and vice versa
 if (template.name != "force_directed") {
   var canvas = document.querySelector("canvas");
   canvas.style.display = "none";
 }
-
 if (template.name == "force_directed") {
   var viz = document.querySelector("#viz");
   viz.style.display = "none";
-} else {
-  var canvass = document.querySelector("canvas");
-  canvas.style.display = "none";
-  canvas.style.visibility = "hidden";
 }
 
 function get_appearance_data(data) {
@@ -173,7 +161,6 @@ function get_force_directed_data(data) {
 }
 
 function changeColor(color) {
-  console.log("Here");
   if (template.name == "bar") {
     bar_change_color(color, "rect");
   }
@@ -181,7 +168,7 @@ function changeColor(color) {
     bar_change_color(color, "rect");
   }
   if (template.name == "force_directed") {
-    console.log("template force directed");
+    console.log("COLOR : template force directed");
     if (color.localeCompare("random") == 0) {
       const randomColor = Math.floor(Math.random() * 16777215).toString(16);
       const set_color = "#" + randomColor;

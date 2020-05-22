@@ -30,7 +30,7 @@ html
             li.nav-item(class=`${account || ""}`)
               a.nav-link(href = '/account' id="myaccount") My Account
             li.nav-item
-              a.nav-link(href = '/logout') Log Out
+              a.nav-link(href = '/logout' id='logout_button') Log Out
           else
             li.nav-item(class=`${login || ""}`)
               a.nav-link(href = '/login' id = "login") Log In              

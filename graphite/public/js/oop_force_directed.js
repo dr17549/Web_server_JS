@@ -34,14 +34,14 @@ var force_directed = {
       .force("charge", d3.forceManyBody())
       .force("center", d3.forceCenter(width / 2, height / 2));
     // .alphaDecay(0);
-
+    // if (options.colour) changeColor(options.colour);
     d3.select("input[type=range]").on("input", inputted);
 
     simulation.nodes(graph.nodes).on("tick", ticked);
 
     simulation.force("link").links(graph.links);
 
-    if (options.colour) changeColor(options.colour);
+    // // problem is here
     function ticked() {
       context.clearRect(0, 0, width, height);
 
