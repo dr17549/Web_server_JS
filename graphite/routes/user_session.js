@@ -239,12 +239,80 @@ router.get("/account", requiresLogin, (req, res) => {
   });
 });
 
+router.get("/admin", requiresAdmin, async (req, res) => {
+  const users = await User.find().sort({ user_ID: -1 });
+  res.render("admin", {
+    title: "Graphite",
+    admin: "active",
+    user: req.session.user,
+    data: users,
+  });
+});
+
+router.post("/admin", requiresAdmin, async (req, res) => {
+  console.log(req.body);
+  User.findOneAndUpdate({user_ID: parseInt(req.body.ID)}, {email: req.body.email, access: parseInt(req.body.access)}, function (err, result) {
+    if (err) {
+      res.send(err);
+    } else {
+      //res.send(result);
+    }
+  });
+
+  try {
+    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
+    const users = await User.find().sort({ user_ID: -1 });
+    //return the ^
+    res.render("admin", {
+      title: "Graphite",
+      admin: "active",
+      user: req.session.user,
+      created: "updated",
+      data: users,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+
+});
+
+router.post("/admin/:function/:id", requiresAdmin, async (req, res) => {
+ if (req.params.function == "delete") {
+    User.findOneAndDelete({ user_ID: req.params.id }, function (err, result) {
+      if (err) {
+        res.send(err);
+      } else {
+        //res.send(result);
+      }
+    });
+    try {
+      // Mongoose method works by returning all associated subscriber objects that meet its criteria.
+      const users = await User.find().sort({ user_ID: -1 });
+      //return the ^
+      res.render("admin", {
+        title: "Graphite",
+        admin: "active",
+        user: req.session.user,
+        created: "deleted",
+        data: users,
+      });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+});
+
 router.get("/stories", requiresLogin, async (req, res) => {
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const stories = await Story.find({
-      user_ID: req.session.user.user_ID,
-    }).sort({ dateEdited: -1 });
+    let stories;
+    if(req.session.user.access > 0) {
+      stories = await Story.find().sort({ dateEdited: -1 });
+    } else {
+      stories = await Story.find({
+        user_ID: req.session.user.user_ID,
+      }).sort({ dateEdited: -1 });
+    }
     //return the ^
     res.render("stories", {
       title: "Graphite",
@@ -285,9 +353,14 @@ router.post("/stories/:function/:id", requiresLogin, async (req, res) => {
     console.log("story deleted!");
     try {
       // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-      const stories = await Story.find({
-        user_ID: req.session.user.user_ID,
-      }).sort({ dateEdited: -1 });
+      let stories;
+      if(req.session.user.access > 0) {
+        stories = await Story.find().sort({ dateEdited: -1 });
+      } else {
+        stories = await Story.find({
+          user_ID: req.session.user.user_ID,
+        }).sort({ dateEdited: -1 });
+      }
       //return the ^
       res.render("stories", {
         title: "Graphite",
@@ -346,9 +419,14 @@ router.post("/new_story", requiresLogin, async (req, res) => {
   }
   try {
     // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const stories = await Story.find({
-      user_ID: req.session.user.user_ID,
-    }).sort({ dateEdited: -1 });
+    let stories;
+    if(req.session.user.access > 0) {
+      stories = await Story.find().sort({ dateEdited: -1 });
+    } else {
+      stories = await Story.find({
+        user_ID: req.session.user.user_ID,
+      }).sort({ dateEdited: -1 });
+    }
     //return the ^
     res.render("stories", {
       title: "Graphite",
@@ -363,11 +441,23 @@ router.post("/new_story", requiresLogin, async (req, res) => {
 });
 
 router.get("/graphs", requiresLogin, async (req, res) => {
-  const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
+  let graphs;
+  if(req.session.user.access > 0) {
+    graphs = await Graph.find();
+  } else {
+    graphs = await Graph.find({
+      user_ID: req.session.user.user_ID,
+    });
+  }
   const templates = await Template.find();
-  const stories = await Story.find({ user_ID: req.session.user.user_ID }).sort({
-    dateEdited: -1,
-  });
+  let stories;
+  if(req.session.user.access > 0) {
+    stories = await Story.find().sort({ dateEdited: -1 });
+  } else {
+    stories = await Story.find({
+      user_ID: req.session.user.user_ID,
+    }).sort({ dateEdited: -1 });
+  }
   // console.log(graphs);
   res.render("graphs", {
     title: "Graphite",
@@ -412,11 +502,23 @@ router.post("/graphs/:function/:id", requiresLogin, async (req, res) => {
     });
     console.log("graph deleted!");
     try {
-      const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
+      let graphs;
+      if(req.session.user.access > 0) {
+        graphs = await Graph.find();
+      } else {
+        graphs = await Graph.find({
+          user_ID: req.session.user.user_ID,
+        });
+      }
       const templates = await Template.find();
-      const stories = await Story.find({
-        user_ID: req.session.user.user_ID,
-      }).sort({ dateEdited: -1 });
+      let stories;
+      if(req.session.user.access > 0) {
+        stories = await Story.find().sort({ dateEdited: -1 });
+      } else {
+        stories = await Story.find({
+          user_ID: req.session.user.user_ID,
+        }).sort({ dateEdited: -1 });
+      }
       // console.log(graphs);
       res.render("graphs", {
         title: "Graphite",
@@ -517,7 +619,14 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
     }
   }
   try {
-    const graphs = await Graph.find({ user_ID: req.session.user.user_ID });
+    let graphs;
+    if(req.session.user.access > 0) {
+      graphs = await Graph.find();
+    } else {
+      graphs = await Graph.find({
+        user_ID: req.session.user.user_ID,
+      });
+    }
     const templates = await Template.find();
     const stories = await Story.find({
       user_ID: req.session.user.user_ID,
@@ -676,6 +785,28 @@ router.get("/logout", async (req, res) => {
 async function requiresLogin(req, res, next) {
   if (req.session.user) {
     return next();
+  } else {
+    var err = new Error("You must be logged in to view this page.");
+    res.render("error", {
+      title: "Graphite",
+      message: "You must be logged in to view this page.",
+    });
+    return next(err);
+  }
+}
+
+async function requiresAdmin(req, res, next) {
+  if (req.session.user) {
+    if(req.session.user.access > 0) {
+      return next();
+    } else {
+      var err = new Error("You must be an admin to view this page.");
+      res.render("error", {
+        title: "Graphite",
+        message: "You must be an admin to view this page.",
+      });
+      return next(err);
+    }
   } else {
     var err = new Error("You must be logged in to view this page.");
     res.render("error", {

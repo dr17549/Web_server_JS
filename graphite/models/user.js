@@ -19,6 +19,10 @@ const userSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
+  access: {
+    type: Number,
+    default: 0,
+  },
 });
 
 // userSchema.pre("update", function (next) {

@@ -29,6 +29,9 @@ html
               a.nav-link(href = '/graphs' id="mygraphs") My Graphs
             li.nav-item(class=`${account || ""}`)
               a.nav-link(href = '/account' id="myaccount") My Account
+            if user.access > 0
+              li.nav-item(class=`${admin || ""}`)
+                a.nav-link(href = '/admin' id='admin') Admin
             li.nav-item
               a.nav-link(href = '/logout' id='logout_button') Log Out
           else
@@ -36,6 +39,8 @@ html
               a.nav-link(href = '/login' id = "login") Log In              
       
       if user
+        if user.access > 0
+          p(style="margin-bottom:0; margin-right:0.5rem") ADMIN
         i.fas.fa-user(style="margin-right:0.5rem")
         p(style="margin-bottom:0")= `${user.email || "Please log in."}`
       else
