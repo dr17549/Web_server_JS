@@ -139,50 +139,36 @@ if (template.name == "force_directed") {
   viz.style.display = "none";
 }
 
+function get_level_children(position, level, levels) {
+  let children = [];
+  for(const [key, value] of Object.entries(display_data)) {
+    let regex = /^\d+$/;
+    let match = key.match(regex);
+    if (match && match > position) {
+      if(levels.indexOf(value.level) == (levels.indexOf(level) + 1)) {
+        children.push({name: value.name ? value.name : "Chapter " + key, children: get_level_children(key, value.level, levels)});
+      } else if (value.level == level) break;
+    }
+  }
+  return children;
+}
+
 function get_tree_data(display_data) {
-  // structured_data = {};
-  // return_data = {};
-  // //title
-  // if (display_data.wordcount && display_data.title) {
-  //   return_data["name"] = display_data["title"];
-  //   for (const [key, value] of Object.entries(display_data)) {
-  //     if (value.name != undefined && value.characters != undefined) {
-  //       structured_data[value.name] = value.characters;
-  //     }
-  //   }
-  // }
-  // var keys = Object.keys(structured_data).reverse();
-  // console.log(keys);
-  // var reverse_children = [];
-  // // fake data
-  var example_DATA = {
-    name: "Title",
-    children: [
-      {
-        name: "Chapter 1",
-        children: [{ name: "Chapter 2" }, { name: "Beth, Jerry, Summer" }],
-      },
-      { name: "Rick, Morty" },
-    ],
+  let levels = [];
+  for(const [key, value] of Object.entries(display_data)) {
+    let regex = /^\d+$/;
+    let match = key.match(regex);
+    if (match) {
+      if(!levels.includes(value.level)) levels.push(value.level);
+    }
+  }
+
+  var output = {
+    name: display_data.title,
+    children: get_level_children("0", 0, levels)
   };
-  console.log(example_DATA);
-  // for (i in keys) {
-  //   k = keys[i];
-  //   var left_child = {};
-  //   var right_child = {};
-  //   if (reverse_children.length > 0) {
-  //     left_child["name"] = k;
-  //     left_child["children"] = reverse_children;
-  //   } else {
-  //     left_child["name"] = k;
-  //   }
-  //   right_child["name"] = structured_data[k];
-  //   reverse_children[0] = left_child;
-  //   reverse_children[1] = right_child;
-  // }
-  // return_data["children"] = reverse_children;
-  // console.log(return_data);
-  return example_DATA;
+
+  return output;
 }
 function get_appearance_data(data) {
   var dataset = [];
