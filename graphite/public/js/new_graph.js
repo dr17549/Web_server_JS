@@ -10,8 +10,8 @@ $("#colourSelect").on("change", function () {
 
 // main function
 var dataset = [];
-
 var display_data = JSON.parse(data);
+var example_tree = get_tree_data(display_data);
 
 if (display_data.wordcount && display_data.title) {
   for (const [key, value] of Object.entries(display_data)) {
@@ -22,18 +22,6 @@ if (display_data.wordcount && display_data.title) {
     }
   }
 }
-
-// fake data
-var treeData = {
-  name: "Top Level",
-  children: [
-    {
-      name: "Level 2: A",
-      children: [{ name: "Son of A" }, { name: "Daughter of A" }],
-    },
-    { name: "Level 2: B" },
-  ],
-};
 
 var line_data = {
   Afghanistan: [
@@ -130,7 +118,11 @@ var f_d = get_force_directed_data(display_data);
 
 // console.log(display_data);
 if (template.name == "bar") bar.draw(dataset);
-if (template.name == "tree") collapse_tree.draw(treeData);
+if (template.name == "tree") {
+  var tree_data = get_tree_data(display_data);
+  console.log(tree_data);
+  collapse_tree.draw(tree_data);
+}
 if (template.name == "appearance") horizontal_bar.draw(hoz_data);
 if (template.name == "force_directed") {
   force_directed.draw(f_d, "Black", "Black");
@@ -147,6 +139,51 @@ if (template.name == "force_directed") {
   viz.style.display = "none";
 }
 
+function get_tree_data(display_data) {
+  // structured_data = {};
+  // return_data = {};
+  // //title
+  // if (display_data.wordcount && display_data.title) {
+  //   return_data["name"] = display_data["title"];
+  //   for (const [key, value] of Object.entries(display_data)) {
+  //     if (value.name != undefined && value.characters != undefined) {
+  //       structured_data[value.name] = value.characters;
+  //     }
+  //   }
+  // }
+  // var keys = Object.keys(structured_data).reverse();
+  // console.log(keys);
+  // var reverse_children = [];
+  // // fake data
+  var example_DATA = {
+    name: "Title",
+    children: [
+      {
+        name: "Chapter 1",
+        children: [{ name: "Chapter 2" }, { name: "Beth, Jerry, Summer" }],
+      },
+      { name: "Rick, Morty" },
+    ],
+  };
+  console.log(example_DATA);
+  // for (i in keys) {
+  //   k = keys[i];
+  //   var left_child = {};
+  //   var right_child = {};
+  //   if (reverse_children.length > 0) {
+  //     left_child["name"] = k;
+  //     left_child["children"] = reverse_children;
+  //   } else {
+  //     left_child["name"] = k;
+  //   }
+  //   right_child["name"] = structured_data[k];
+  //   reverse_children[0] = left_child;
+  //   reverse_children[1] = right_child;
+  // }
+  // return_data["children"] = reverse_children;
+  // console.log(return_data);
+  return example_DATA;
+}
 function get_appearance_data(data) {
   var dataset = [];
   // console.log(display_data);
@@ -251,6 +288,7 @@ function get_force_directed_data(data) {
   return dataset;
 }
 
+// change colors
 function changeColor(color) {
   if (template.name == "bar") {
     bar_change_color(color, "rect");

@@ -24,7 +24,7 @@ var collapse_tree = {
     var treemap = d3.tree().size([height, width]);
 
     // Assigns parent, children, height, depth
-    root = d3.hierarchy(treeData, function (d) {
+    root = d3.hierarchy(data, function (d) {
       return d.children;
     });
     root.x0 = height / 2;
