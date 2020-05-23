@@ -23,6 +23,7 @@ if (display_data.wordcount && display_data.title) {
   }
 }
 
+// fake data
 var treeData = {
   name: "Top Level",
   children: [
@@ -31,6 +32,96 @@ var treeData = {
       children: [{ name: "Son of A" }, { name: "Daughter of A" }],
     },
     { name: "Level 2: B" },
+  ],
+};
+
+var line_data = {
+  Afghanistan: [
+    {
+      Date: 1999,
+      Imports: "15",
+      Exports: "20",
+    },
+    {
+      Date: 2008,
+      Imports: "42",
+      Exports: "115",
+    },
+    {
+      Date: 2007,
+      Imports: "29",
+      Exports: "79",
+    },
+    {
+      Date: 2009,
+      Imports: "346",
+      Exports: "324",
+    },
+    {
+      Date: 2006,
+      Imports: "44",
+      Exports: "69",
+    },
+    {
+      Date: 2010,
+      Imports: "424",
+      Exports: "503",
+    },
+    {
+      Date: 2005,
+      Imports: "28",
+      Exports: "48",
+    },
+    {
+      Date: 2011,
+      Imports: "413",
+      Exports: "603",
+    },
+    {
+      Date: 2004,
+      Imports: "34",
+      Exports: "41",
+    },
+    {
+      Date: 2012,
+      Imports: "313",
+      Exports: "517",
+    },
+    {
+      Date: 2003,
+      Imports: "21",
+      Exports: "36",
+    },
+    {
+      Date: 2013,
+      Imports: "513",
+      Exports: "615",
+    },
+    {
+      Date: 2002,
+      Imports: "18",
+      Exports: "23",
+    },
+    {
+      Date: 2014,
+      Imports: "471",
+      Exports: "766",
+    },
+    {
+      Date: 2001,
+      Imports: "17",
+      Exports: "29",
+    },
+    {
+      Date: 2015,
+      Imports: "119",
+      Exports: "181",
+    },
+    {
+      Date: 2000,
+      Imports: "25",
+      Exports: "25",
+    },
   ],
 };
 
@@ -45,12 +136,12 @@ if (template.name == "force_directed") {
   force_directed.draw(f_d, "Black", "Black");
   if (options.colour) changeColor(options.colour);
 }
+if (template.name == "line") {
+  console.log("LINE GRAPH");
+  line_graph.append(line_data);
+}
 
 // template fix - e.g. removed canvas if use SVG and vice versa
-if (template.name != "force_directed") {
-  var canvas = document.querySelector("canvas");
-  canvas.style.display = "none";
-}
 if (template.name == "force_directed") {
   var viz = document.querySelector("#viz");
   viz.style.display = "none";
@@ -167,6 +258,10 @@ function changeColor(color) {
   if (template.name == "appearance") {
     bar_change_color(color, "rect");
   }
+  if (template.name == "line") {
+    console.log("Change line colours");
+    line_change_color(color, ".line");
+  }
   if (template.name == "force_directed") {
     console.log("COLOR : template force directed");
     if (color.localeCompare("random") == 0) {
@@ -185,6 +280,57 @@ function changeColor(color) {
     if (color.localeCompare("blue") == 0) {
       force_directed.draw(f_d, "Blue", "Aqua");
     }
+  }
+}
+
+function line_change_color(color, select) {
+  //document.getElementById("save_color").value = color;
+  var chosen;
+  if (color.localeCompare("blue") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(0, 40),
+            getRndInteger(20, 230)
+          )
+        );
+      });
+  } else if (color.localeCompare("red") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(20, 240),
+            getRndInteger(0, 40),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else if (color.localeCompare("green") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(20, 240),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else {
+    console.log("random");
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", randomColor);
   }
 }
 
