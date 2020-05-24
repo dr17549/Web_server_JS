@@ -23,95 +23,95 @@ if (display_data.wordcount && display_data.title) {
   }
 }
 
-var line_data = {
-  Afghanistan: [
-    {
-      Date: 1999,
-      Imports: "15",
-      Exports: "20",
-    },
-    {
-      Date: 2008,
-      Imports: "42",
-      Exports: "115",
-    },
-    {
-      Date: 2007,
-      Imports: "29",
-      Exports: "79",
-    },
-    {
-      Date: 2009,
-      Imports: "346",
-      Exports: "324",
-    },
-    {
-      Date: 2006,
-      Imports: "44",
-      Exports: "69",
-    },
-    {
-      Date: 2010,
-      Imports: "424",
-      Exports: "503",
-    },
-    {
-      Date: 2005,
-      Imports: "28",
-      Exports: "48",
-    },
-    {
-      Date: 2011,
-      Imports: "413",
-      Exports: "603",
-    },
-    {
-      Date: 2004,
-      Imports: "34",
-      Exports: "41",
-    },
-    {
-      Date: 2012,
-      Imports: "313",
-      Exports: "517",
-    },
-    {
-      Date: 2003,
-      Imports: "21",
-      Exports: "36",
-    },
-    {
-      Date: 2013,
-      Imports: "513",
-      Exports: "615",
-    },
-    {
-      Date: 2002,
-      Imports: "18",
-      Exports: "23",
-    },
-    {
-      Date: 2014,
-      Imports: "471",
-      Exports: "766",
-    },
-    {
-      Date: 2001,
-      Imports: "17",
-      Exports: "29",
-    },
-    {
-      Date: 2015,
-      Imports: "119",
-      Exports: "181",
-    },
-    {
-      Date: 2000,
-      Imports: "25",
-      Exports: "25",
-    },
-  ],
-};
+// var line_data = {
+//   Afghanistan: [
+//     {
+//       Date: 1999,
+//       Imports: "15",
+//       Exports: "20",
+//     },
+//     {
+//       Date: 2008,
+//       Imports: "42",
+//       Exports: "115",
+//     },
+//     {
+//       Date: 2007,
+//       Imports: "29",
+//       Exports: "79",
+//     },
+//     {
+//       Date: 2009,
+//       Imports: "346",
+//       Exports: "324",
+//     },
+//     {
+//       Date: 2006,
+//       Imports: "44",
+//       Exports: "69",
+//     },
+//     {
+//       Date: 2010,
+//       Imports: "424",
+//       Exports: "503",
+//     },
+//     {
+//       Date: 2005,
+//       Imports: "28",
+//       Exports: "48",
+//     },
+//     {
+//       Date: 2011,
+//       Imports: "413",
+//       Exports: "603",
+//     },
+//     {
+//       Date: 2004,
+//       Imports: "34",
+//       Exports: "41",
+//     },
+//     {
+//       Date: 2012,
+//       Imports: "313",
+//       Exports: "517",
+//     },
+//     {
+//       Date: 2003,
+//       Imports: "21",
+//       Exports: "36",
+//     },
+//     {
+//       Date: 2013,
+//       Imports: "513",
+//       Exports: "615",
+//     },
+//     {
+//       Date: 2002,
+//       Imports: "18",
+//       Exports: "23",
+//     },
+//     {
+//       Date: 2014,
+//       Imports: "471",
+//       Exports: "766",
+//     },
+//     {
+//       Date: 2001,
+//       Imports: "17",
+//       Exports: "29",
+//     },
+//     {
+//       Date: 2015,
+//       Imports: "119",
+//       Exports: "181",
+//     },
+//     {
+//       Date: 2000,
+//       Imports: "25",
+//       Exports: "25",
+//     },
+//   ],
+// };
 
 var hoz_data = get_appearance_data(display_data);
 var f_d = get_force_directed_data(display_data);
@@ -129,7 +129,7 @@ if (template.name == "force_directed") {
   if (options.colour) changeColor(options.colour);
 }
 if (template.name == "line") {
-  console.log("LINE GRAPH");
+  var line_data = get_lined_data(display_data);
   line_graph.append(line_data);
 }
 
@@ -139,14 +139,56 @@ if (template.name == "force_directed") {
   viz.style.display = "none";
 }
 
+function get_lined_data(display_data) {
+  var return_data = {};
+  console.log(display_data);
+  keys = Object.keys(display_data);
+  var unique_characters = [];
+  // get unique character
+  var dataset = get_appearance_data(display_data);
+  for (var i = 0; i < dataset.length; i++) {
+    unique_characters.push(dataset[i]["character"]);
+  }
+  return_data["unique_characters"] = unique_characters;
+  return_data["dataset"] = [];
+  var max = 0;
+  if (display_data.wordcount && display_data.title) {
+    for (const [key, value] of Object.entries(display_data)) {
+      if (key != "title" && key != "wordcount") {
+        var info = {};
+        info["Chapter"] = key;
+        if (value.size > max) max = value.size;
+        for (var i in unique_characters) {
+          info[unique_characters[i]] = 0;
+        }
+        if (value.characters != undefined) {
+          if (value.characters.length > 0) {
+            list = value.characters.split(",");
+            list.forEach(function (element) {
+              element = element.trim();
+              info[element] = value.size;
+            });
+          }
+        }
+        return_data["dataset"].push(info);
+      }
+    }
+  }
+  return_data["max"] = max;
+  console.log(return_data);
+  return return_data;
+}
 function get_level_children(position, level, levels) {
   let children = [];
-  for(const [key, value] of Object.entries(display_data)) {
+  for (const [key, value] of Object.entries(display_data)) {
     let regex = /^\d+$/;
     let match = key.match(regex);
     if (match && match > position) {
       if(levels.indexOf(value.level) == (levels.indexOf(level) + 1)) {
-        children.push({name: value.name ? value.name : "Chapter " + key, children: get_level_children(key, value.level, levels).concat([{name: value.size ? value.size : 0}, {name: value.characters ? value.characters : "no characters"}])});
+        children.push({
+          name: value.name ? value.name : "Chapter " + key,
+          children: get_level_children(key, value.level, levels).concat([{name: value.size ? value.size : 0}, {name: value.characters ? value.characters : "no characters"}])
+        });
       } else if (value.level == level) break;
     }
   }
@@ -155,17 +197,17 @@ function get_level_children(position, level, levels) {
 
 function get_tree_data(display_data) {
   let levels = [];
-  for(const [key, value] of Object.entries(display_data)) {
+  for (const [key, value] of Object.entries(display_data)) {
     let regex = /^\d+$/;
     let match = key.match(regex);
     if (match) {
-      if(!levels.includes(value.level)) levels.push(value.level);
+      if (!levels.includes(value.level)) levels.push(value.level);
     }
   }
 
   var output = {
     name: display_data.title,
-    children: get_level_children("0", 0, levels)
+    children: get_level_children("0", 0, levels),
   };
 
   return output;

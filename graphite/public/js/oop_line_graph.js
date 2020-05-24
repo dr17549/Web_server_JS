@@ -12,24 +12,17 @@ var line_graph = {
     var x = d3.scaleTime().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
 
-    // define the line
-    var valueline = d3
-      .line()
-      .x(function (d) {
-        return x(d.Date);
-      })
-      .y(function (d) {
-        return y(d.Imports);
-      });
-    // define the line
-    var valueline2 = d3
-      .line()
-      .x(function (d) {
-        return x(d.Date);
-      })
-      .y(function (d) {
-        return y(d.Exports);
-      });
+    var valuelines = {};
+    for (i in data["unique_characters"]) {
+      valuelines[data["unique_characters"][i]] = d3
+        .line()
+        .x(function (d) {
+          return x(d['Chapter']);
+        })
+        .y(function (d) {
+          return y(d[data["unique_characters"][i]]);
+        });
+    }
 
     // append the svg obgect to the body of the page
     // appends a 'group' element to 'svg'
@@ -42,52 +35,60 @@ var line_graph = {
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    function draw(data, country) {
-      var data = data[country];
+    function draw(original_data) {
+      var unique_characters = original_data["unique_characters"];
+      var data = original_data["dataset"];
 
       // format the data
       data.forEach(function (d) {
-        d.Date = parseTime(d.Date);
-        d.Imports = +d.Imports;
-        d.Exports = +d.Exports;
+        d['Chapter'] = +d['Chapter'];
+        for (i in unique_characters) {
+          d[unique_characters[i]] = +d[unique_characters[i]];
+        }
       });
+      console.log(data);
 
       // sort years ascending
       data.sort(function (a, b) {
-        return a["Date"] - b["Date"];
+        return a["Chapter"] - b["Chapter"];
       });
 
       // Scale the range of the data
       x.domain(
         d3.extent(data, function (d) {
-          return d.Date;
+          return d['Chapter'];
         })
       );
-      y.domain([
-        0,
-        d3.max(data, function (d) {
-          return Math.max(d.Imports, d.Exports);
-        }),
-      ]);
+      y.domain([0, original_data["max"]]);
 
       // Add the valueline path.
+      // for (i in unique_characters) {
+      //   svg
+      //     .append("path")
+      //     .data([data])
+      //     .attr("class", "line")
+      //     .attr("d", valuelines[unique_characters[i]])
+      //     .attr("fill", "none")
+      //     .attr("stroke", "blue")
+      //     .attr("stroke-width", "2px");
+      // }
       svg
         .append("path")
         .data([data])
         .attr("class", "line")
-        .attr("d", valueline)
+        .attr("d", valuelines["Luke"])
         .attr("fill", "none")
         .attr("stroke", "blue")
         .attr("stroke-width", "2px");
       // Add the valueline path.
-      svg
-        .append("path")
-        .data([data])
-        .attr("class", "line")
-        .attr("d", valueline2)
-        .attr("fill", "none")
-        .attr("stroke", "blue")
-        .attr("stroke-width", "2px");
+      // svg
+      //   .append("path")
+      //   .data([data])
+      //   .attr("class", "line")
+      //   .attr("d", valueline2)
+      //   .attr("fill", "none")
+      //   .attr("stroke", "blue")
+      //   .attr("stroke-width", "2px");
       // Add the X Axis
       svg
         .append("g")
@@ -98,7 +99,7 @@ var line_graph = {
       svg.append("g").call(d3.axisLeft(y));
     }
     // trigger render
-    draw(data, "Afghanistan");
+    draw(data);
 
     d3.select("input[type=range]").on("input", inputted);
 
