@@ -55,7 +55,6 @@ router.post("/register", async (req, res) => {
   // updates the id counter for user, to mimic an auto-increment field
   // ensures each new user has a unique id they can be referenced with
   Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (error, counter) {
-    // TODO: update error handling
     if (error) {
       res.render("register", {
         title: "Graphite",
@@ -71,7 +70,6 @@ router.post("/register", async (req, res) => {
   try {
     const newUser = await user.save();
   } catch (err) {
-    // TODO: update error handling
     res.render("register", {
       title: "Graphite",
       login: "active",
@@ -95,8 +93,7 @@ router.get("/logout", async (req, res) => {
     // destroys the session
     req.session.destroy(function (err) {
       if (err) {
-        // TODO: figure out how exactly this next() is working
-        return next(err);
+        next(err);
       } else {
         res.render("login", { title: "Graphite", login: "active", user: null });
       }
@@ -119,7 +116,6 @@ router.post("/forgot_password", async (req, res) => {
   user = await User.findOne({ email: req.body.email });
 
   if (user == null) {
-    // TODO: handle errors properly
     return res
       .status(404)
       .json({ message: "User not found! Please enter a valid email." });
@@ -133,9 +129,7 @@ router.post("/forgot_password", async (req, res) => {
     }
     user.password = randomstring;
     
-    // TODO: ask Zen if working!
     try {
-      // this is not working
       const updateuser = await user.save();
     } catch (err) {
       res.status(400).json({ message: err.message });
@@ -151,12 +145,11 @@ router.post("/forgot_password", async (req, res) => {
     });
 
     // the body of the email
-    // TODO: elaborate
     var mailOptions = {
       from: "graphite.website.official@gmail.com",
       to: req.body.email,
-      subject: "Reset Passsword",
-      text: "Please use this password to login : " + randomstring,
+      subject: "Graphite Reset Passsword",
+      text: "Please use this password to login : " + randomstring + "\n If you did not reset your password, please ignore this email.",
     };
 
     // actually sends the email
@@ -194,15 +187,12 @@ router.post("/reset_password", requiresLogin, async (req, res) => {
   
   // if the passwords don't match, throw error
   if (password.localeCompare(confirm_password) != 0) {
-    // TODO: handle errors properly
-    res.render(
-      res.render("reset_password", {
-        title: "Graphite",
-        home: "active",
-        user: req.session.user,
-        message: "Password not the same! Please try again",
-      })
-    );
+    res.render("reset_password", {
+      title: "Graphite",
+      home: "active",
+      user: req.session.user,
+      message: "Password not the same! Please try again",
+    });
   }
 
   // attempt to update password
@@ -210,7 +200,6 @@ router.post("/reset_password", requiresLogin, async (req, res) => {
     user.password = password;
     const updateuser = await user.save();
   } catch (err) {
-    // TODO: handle errors properly
     res.render("reset_password", {
       title: "Graphite",
       login: "active",
@@ -259,7 +248,6 @@ router.post("/admin", requiresAdmin, async (req, res) => {
   // the corresponding action is taken depending on which ID is submitted
   if(req.body.ID_1) {
     User.findOneAndDelete({ user_ID: parseInt(req.body.ID_1) }, function (err, result) {
-      // TODO: handle errors properly
       if (err) {
         res.send(err);
       }
@@ -267,7 +255,6 @@ router.post("/admin", requiresAdmin, async (req, res) => {
   } else if(req.body.ID_2) {
     // edit the user data
     User.findOneAndUpdate({user_ID: parseInt(req.body.ID_2)}, {email: req.body.email, access: parseInt(req.body.access)}, function (err, result) {
-      // TODO: handle errors properly
       if (err) {
         res.send(err);
       }
@@ -330,7 +317,6 @@ router.post("/stories", requiresLogin, async (req, res) => {
     });
   } else if (req.body.function == "delete") {
     Story.findOneAndDelete({ story_ID: req.body.ID }, function (err, result) {
-      // TODO: handle errors properly
       if (err) {
         res.send(err);
       }
@@ -375,7 +361,6 @@ router.post("/new_story", requiresLogin, async (req, res) => {
       { story_ID: req.body.story_ID },
       { story: JSON.stringify(json), dateEdited: new Date() },
       function (err, result) {
-        // TODO: handle errors properly
         if (err) {
           res.send(err);
         }
@@ -392,7 +377,6 @@ router.post("/new_story", requiresLogin, async (req, res) => {
     try {
       const newStory = await story.save();
     } catch (err) {
-      // TODO: handle errors properly
       res.render("new_story", {
         title: "Graphite",
         stories: "active",
@@ -484,7 +468,6 @@ router.post("/graphs", requiresLogin, async (req, res) => {
     });
   } else if (req.body.function == "delete") {
     Graph.findOneAndDelete({ graph_ID: req.body.ID }, function (err, result) {
-      // TODO: handle errors properly
       if (err) {
         res.send(err);
       }
@@ -559,7 +542,6 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
       { graph_ID: req.body.graph_ID },
       { options: JSON.stringify(options) },
       function (err, result) {
-        // TODO: handle errors properly
         if (err) {
           res.send(err);
         }
@@ -578,7 +560,6 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
     try {
       const newGraph = await graph.save();
     } catch (err) {
-      // TODO: handle errors properly
       res.render("new_graph", {
         title: "Graphite",
         stories: "active",
@@ -620,46 +601,43 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
 
 // function to make sure a user is logged in
 async function requiresLogin(req, res, next) {
-  // TODO: handle errors properly
   if (req.session.user) {
     return next();
   } else {
-    var err = new Error("You must be logged in to view this page.");
-    res.render("error", {
+    res.render("index", {
       title: "Graphite",
-      message: "You must be logged in to view this page.",
+      home: "active",
+      user: req.session.user,
+      error: "You must be logged in to view this page."
     });
-    return next(err);
   }
 }
 
 // function to make sure an admin is logged in
 async function requiresAdmin(req, res, next) {
-  // TODO: handle errors properly
   if (req.session.user) {
     if(req.session.user.access > 0) {
       return next();
     } else {
-      var err = new Error("You must be an admin to view this page.");
-      res.render("error", {
+      res.render("index", {
         title: "Graphite",
-        message: "You must be an admin to view this page.",
+        home: "active",
+        user: req.session.user,
+        error: "You must be an admin to view this page."
       });
-      return next(err);
     }
   } else {
-    var err = new Error("You must be logged in to view this page.");
-    res.render("error", {
+    res.render("index", {
       title: "Graphite",
-      message: "You must be logged in to view this page.",
+      home: "active",
+      user: req.session.user,
+      error: "You must be logged in to view this page."
     });
-    return next(err);
   }
 }
 
 // function to authenticate a user
 async function authenticateUser(req, res, next) {
-  // TODO: handle errors properly
   // no email supplied
   if (!req.body.email) {
     res.render("login", {
@@ -709,5 +687,57 @@ async function authenticateUser(req, res, next) {
 
   next();
 }
+
+// error handling
+router.use(function (req,res,next){
+  res.status(400).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "Whoops! Something went wrong with the request."
+  });
+  res.status(401).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "You do not have permission to access this page."
+  });
+  res.status(403).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "Request forbidden!"
+  });
+	res.status(404).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "Whoops! The resource you're looking for wasn't found."
+  });
+  res.status(500).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "Whoops! Something went wrong on our end."
+  });
+  res.status(502).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "Whoops! Something went wrong."
+  });
+  res.status(503).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "This service is unavailable."
+  });
+  res.status(504).render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+    error: "Whoops! The server took too long to respond."
+  });
+});
 
 module.exports = router;

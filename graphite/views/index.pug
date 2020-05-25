@@ -3,6 +3,8 @@ extends layout
 block content
   h1 Graphite
   p Graphite is a place where you can create your own data visualisations for pieces of fiction, such as pacing and character co-occurance. Log in and get started!
+  if error
+    .alert.alert-danger(role="alert") #{error}
   if message
     .alert.alert-success(role="alert") #{message}
 
