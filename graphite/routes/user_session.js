@@ -10,7 +10,12 @@ const bcrypt = require("bcrypt");
 const helper = require("./helper.js");
 const nodemailer = require("nodemailer");
 
-router.get("/", (req, res) => {
+//////////////////////////////BASE PAGES////////////////////////////////
+
+// get handler for /
+// title is the title of the page
+// the "active" key determines which link in the menu is active
+router.get("/", async (req, res) => {
   res.render("index", {
     title: "Graphite",
     home: "active",
@@ -18,128 +23,125 @@ router.get("/", (req, res) => {
   });
 });
 
-// Graphs Zen
-router.post("/graphs", async (req, res) => {
-  const templates = await Template.find({
-    template_ID: req.body.template_ID,
+// get handler for /login
+router.get("/login", async (req, res) => {
+  res.render("login", {
+    title: "Graphite",
+    login: "active",
+    user: req.session.user,
   });
-  const stories = await Story.find({ story_ID: req.body.story_ID });
-  const graph = await Graph.find({ graph_ID: req.body.graph_ID });
-
-  // console.log(stories);
-  // console.log(req.body.story_ID);
-  // console.log(req.body.graph_ID);
-
-  var graph_type = templates[0].name;
-  if (graph_type.localeCompare("force_directed") == 0) {
-    res.render("force_directed");
-  } else if (graph_type.localeCompare("bar") == 0) {
-    res.render("bar_chart", {
-      title: "Graphite",
-      graphs: "active",
-      user: req.session.user,
-      story_ID: req.body.story_ID,
-      data: stories,
-      template_ID: req.body.template_ID,
-      templateData: templates,
-      graph_ID: req.body.graph_ID,
-      options: graph[0].options,
-    });
-  } else {
-    res.render("new_graph", {
-      title: "Graphite",
-      graphs: "active",
-      user: req.session.user,
-      data: stories,
-      template_ID: req.body.template_ID,
-      templateData: templates,
-      graph_ID: 0,
-    });
-  }
 });
 
-router.get("/forgot_password", (req, res) => {
-  res.render("forget_password");
+// post handler for /login, triggers authenticateUser function
+router.post("/login", authenticateUser, async (req, res) => {});
+
+// get handler for /register
+router.get("/register", async (req, res) => {
+  res.render("register", {
+    title: "Graphite",
+    login: "active",
+    user: req.session.user,
+  });
 });
 
-router.get("/reset_password", requiresLogin, (req, res) => {
-  res.render("reset_password");
-});
-
-router.get("/force_directed", (req, res) => {
-  res.render("force_directed");
-});
-
-router.get("/tidy_tree", (req, res) => {
-  res.render("tidy_tree");
-});
-
-router.get("/collapse_tree", (req, res) => {
-  res.render("collapse_tree");
-});
-
-router.get("/bar_chart", requiresLogin, (req, res) => {
-  res.render("bar_chart");
-});
-router.post("/save_bar_chart", async (req, res) => {
-  if (req.body.graph_id >= 0) {
-    // console.log("Editing" + req.body.graph_id);
-    // console.log("COLOR : " + req.body.color);
-    Graph.findOneAndUpdate(
-      { graph_ID: req.body.graph_id },
-      { options: req.body.color },
-      function (err, result) {
-        if (err) {
-          res.send(err);
-        } else {
-          res.redirect("/graphs");
-        }
-      }
-    );
-    console.log("Editing successful!");
-  } else {
-    const graph = new Graph({
-      user_ID: req.session.user.user_ID,
-      // find this - story ID
-      story_ID: req.body.story_id,
-      template_ID: req.body.template_id,
-      graph_ID: req.body.graph_id,
-      options: req.body.color,
-    });
-    try {
-      const newGraph = await graph.save();
-      res.redirect("/graphs");
-    } catch (err) {
-      res.render("saved_status", {
+// post handler for /register
+router.post("/register", async (req, res) => {
+  // creates a new User object from the body of the form submitted
+  const user = new User({
+    email: req.body.email,
+    password: req.body.password,
+  });
+  
+  // updates the id counter for user, to mimic an auto-increment field
+  // ensures each new user has a unique id they can be referenced with
+  Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (error, counter) {
+    // TODO: update error handling
+    if (error) {
+      res.render("register", {
         title: "Graphite",
         login: "active",
         message: err.message,
       });
-      res.status(400).json({ message: err.message });
     }
+    // actually set the id in the user object
+    user.user_ID = counter.seq;
+  });
+
+  // attempt to save the new user object
+  try {
+    const newUser = await user.save();
+  } catch (err) {
+    // TODO: update error handling
+    res.render("register", {
+      title: "Graphite",
+      login: "active",
+      message: err.message,
+    });
+    res.status(400).json({ message: err.message });
+  }
+
+  // logs the user in and redirects to the homepage
+  req.session.user = user;
+  res.render("index", {
+    title: "Graphite",
+    home: "active",
+    user: req.session.user,
+  });
+});
+
+// get handler for /logout
+router.get("/logout", async (req, res) => {
+  if (req.session) {
+    // destroys the session
+    req.session.destroy(function (err) {
+      if (err) {
+        // TODO: figure out how exactly this next() is working
+        return next(err);
+      } else {
+        res.render("login", { title: "Graphite", login: "active", user: null });
+      }
+    });
   }
 });
-// END GRAPHS ZEN
 
+// get handler for /forgot_password
+router.get("/forgot_password", (req, res) => {
+  res.render("forget_password", {
+    title: "Graphite",
+    login: "active",
+    user: req.session.user,
+  });
+});
+
+// post handler for /forgot_password
 router.post("/forgot_password", async (req, res) => {
+  // attempt to find user with email
   user = await User.findOne({ email: req.body.email });
+
   if (user == null) {
+    // TODO: handle errors properly
     return res
       .status(404)
-      .json({ message: "User not found! please enter a valid email" });
+      .json({ message: "User not found! Please enter a valid email." });
   } else {
-    //create random string
+    // create random string
     var randomstring = Math.random().toString(36).slice(-8);
+    
+    // reset user details
     if (req.body.email != null) {
       user.email = req.body.email;
     }
     user.password = randomstring;
+    
+    // TODO: ask Zen if working!
     try {
       // this is not working
       const updateuser = await user.save();
     } catch (err) {
       res.status(400).json({ message: err.message });
     }
+
+    // email the new details
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -147,13 +149,17 @@ router.post("/forgot_password", async (req, res) => {
         pass: "graphiteabc123",
       },
     });
+
+    // the body of the email
+    // TODO: elaborate
     var mailOptions = {
       from: "graphite.website.official@gmail.com",
       to: req.body.email,
       subject: "Reset Passsword",
-      text: "Please use this password to Login : " + randomstring,
+      text: "Please use this password to login : " + randomstring,
     };
 
+    // actually sends the email
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
@@ -169,68 +175,61 @@ router.post("/forgot_password", async (req, res) => {
   }
 });
 
+// get handler for /reset_password
+router.get("/reset_password", requiresLogin, (req, res) => {
+  res.render("reset_password", {
+    title: "Graphite",
+    login: "active",
+    user: req.session.user,    
+  });
+});
+
+// post handler for /reset_password
 router.post("/reset_password", requiresLogin, async (req, res) => {
+  // find user
   user = await User.findOne({ email: req.session.user.email });
-  console.log(user);
-  // res.user.email = req.session.user.email;
+  
   const password = req.body.password;
   const confirm_password = req.body.confirm_password;
+  
+  // if the passwords don't match, throw error
   if (password.localeCompare(confirm_password) != 0) {
+    // TODO: handle errors properly
     res.render(
       res.render("reset_password", {
         title: "Graphite",
         home: "active",
+        user: req.session.user,
         message: "Password not the same! Please try again",
       })
     );
   }
+
+  // attempt to update password
   try {
-    // const filter = { email: req.session.user.email };
-    // const update = { password: password };
-    // let doc = await User.findOneAndUpdate(filter, update, {
-    //   new: true,
-    // });
-    // console.log(doc.email);
-    // console.log(doc.password);
     user.password = password;
     const updateuser = await user.save();
-    console.log(" user - session : " + updateuser.password);
   } catch (err) {
+    // TODO: handle errors properly
     res.render("reset_password", {
       title: "Graphite",
       login: "active",
+      user: req.session.user,  
       message: err.message,
     });
     res.status(400).json({ message: err.message });
   }
-  // if success
+
   res.render("index", {
     title: "Graphite",
     home: "active",
+    user: req.session.user,  
     message: "Password reset success!",
   });
 });
-router.get("/counter", async (req, res) => {
-  // const counter = new Counter({
-  //   _id: "graphID",
-  //   seq: 0
-  // });
-  // try {
-  //   const newCounter = await counter.save();
-  //   console.log("SAVED!");
-  // } catch (err) {
-  //   console.log(err.message);
-  // }
-  try {
-    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const counters = await Counter.find();
-    //return the ^
-    res.json(counters);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
+// get handler for /account
+// the account page currently doesn't do anything
 router.get("/account", requiresLogin, (req, res) => {
   res.render("account", {
     title: "Graphite",
@@ -239,7 +238,12 @@ router.get("/account", requiresLogin, (req, res) => {
   });
 });
 
+/////////////////////////////ADMIN PAGES/////////////////////////////////
+//the admin pages handle manipulation of users
+
+// get handler for /admin
 router.get("/admin", requiresAdmin, async (req, res) => {
+  // gets all of the users, sorted in in descending order by user_ID
   const users = await User.find().sort({ user_ID: -1 });
   res.render("admin", {
     title: "Graphite",
@@ -249,207 +253,48 @@ router.get("/admin", requiresAdmin, async (req, res) => {
   });
 });
 
+// post handler for /admin
 router.post("/admin", requiresAdmin, async (req, res) => {
-  console.log(req.body);
-  User.findOneAndUpdate({user_ID: parseInt(req.body.ID)}, {email: req.body.email, access: parseInt(req.body.access)}, function (err, result) {
-    if (err) {
-      res.send(err);
-    } else {
-      //res.send(result);
-    }
-  });
-
-  try {
-    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const users = await User.find().sort({ user_ID: -1 });
-    //return the ^
-    res.render("admin", {
-      title: "Graphite",
-      admin: "active",
-      user: req.session.user,
-      created: "updated",
-      data: users,
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-
-});
-
-router.post("/admin/:function/:id", requiresAdmin, async (req, res) => {
- if (req.params.function == "delete") {
-    User.findOneAndDelete({ user_ID: req.params.id }, function (err, result) {
+  // in the admin view there are two separate forms, one for deleting and one for editing
+  // the corresponding action is taken depending on which ID is submitted
+  if(req.body.ID_1) {
+    User.findOneAndDelete({ user_ID: parseInt(req.body.ID_1) }, function (err, result) {
+      // TODO: handle errors properly
       if (err) {
         res.send(err);
-      } else {
-        //res.send(result);
       }
     });
-    try {
-      // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-      const users = await User.find().sort({ user_ID: -1 });
-      //return the ^
-      res.render("admin", {
-        title: "Graphite",
-        admin: "active",
-        user: req.session.user,
-        created: "deleted",
-        data: users,
-      });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
-});
-
-router.get("/stories", requiresLogin, async (req, res) => {
-  try {
-    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    let stories;
-    if(req.session.user.access > 0) {
-      stories = await Story.find().sort({ dateEdited: -1 });
-    } else {
-      stories = await Story.find({
-        user_ID: req.session.user.user_ID,
-      }).sort({ dateEdited: -1 });
-    }
-    //return the ^
-    res.render("stories", {
-      title: "Graphite",
-      stories: "active",
-      user: req.session.user,
-      data: stories,
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-router.post("/stories/:function/:id", requiresLogin, async (req, res) => {
-  if (req.params.function == "edit") {
-    try {
-      // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-      const story = await Story.find({ story_ID: req.params.id });
-      let storyData = helper.reverseJson(JSON.parse(story[0].story));
-      //return the ^
-      res.render("new_story", {
-        title: "Graphite",
-        stories: "active",
-        user: req.session.user,
-        data: storyData,
-        story_ID: story[0].story_ID,
-      });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  } else if (req.params.function == "delete") {
-    Story.findOneAndDelete({ story_ID: req.params.id }, function (err, result) {
+  } else if(req.body.ID_2) {
+    // edit the user data
+    User.findOneAndUpdate({user_ID: parseInt(req.body.ID_2)}, {email: req.body.email, access: parseInt(req.body.access)}, function (err, result) {
+      // TODO: handle errors properly
       if (err) {
         res.send(err);
-      } else {
-        //res.send(result);
       }
     });
-    console.log("story deleted!");
-    try {
-      // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-      let stories;
-      if(req.session.user.access > 0) {
-        stories = await Story.find().sort({ dateEdited: -1 });
-      } else {
-        stories = await Story.find({
-          user_ID: req.session.user.user_ID,
-        }).sort({ dateEdited: -1 });
-      }
-      //return the ^
-      res.render("stories", {
-        title: "Graphite",
-        stories: "active",
-        user: req.session.user,
-        created: "deleted",
-        data: stories,
-      });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
   }
-});
 
-router.get("/new_story", requiresLogin, (req, res) => {
-  res.render("new_story", {
+  // redirects
+  const users = await User.find().sort({ user_ID: -1 });
+  res.render("admin", {
     title: "Graphite",
-    stories: "active",
+    admin: "active",
     user: req.session.user,
+    // message goes in the alert to confirm the action went through
+    message: "updated",
+    data: users,
   });
+
 });
 
-router.post("/new_story", requiresLogin, async (req, res) => {
-  let json = helper.formatJson(req.body);
-  // console.log(json);
-  // console.log(req.body.story_ID);
-  if (req.body.story_ID >= 0) {
-    Story.findOneAndUpdate(
-      { story_ID: req.body.story_ID },
-      { story: JSON.stringify(json), dateEdited: new Date() },
-      function (err, result) {
-        if (err) {
-          res.send(err);
-        } else {
-          //res.send(result);
-        }
-      }
-    );
-    console.log("story updated!");
-  } else {
-    const story = new Story({
-      user_ID: req.session.user.user_ID,
-      story: JSON.stringify(json),
-    });
-    try {
-      const newStory = await story.save();
-      //res.redirect('/stories', { title: 'Graphite', stories: 'active', user: req.session.user});
-    } catch (err) {
-      res.render("new_story", {
-        title: "Graphite",
-        stories: "active",
-        message: err.message,
-      });
-      res.status(400).json({ message: err.message });
-    }
-  }
-  try {
-    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    let stories;
-    if(req.session.user.access > 0) {
-      stories = await Story.find().sort({ dateEdited: -1 });
-    } else {
-      stories = await Story.find({
-        user_ID: req.session.user.user_ID,
-      }).sort({ dateEdited: -1 });
-    }
-    //return the ^
-    res.render("stories", {
-      title: "Graphite",
-      stories: "active",
-      created: req.body.story_ID >= 0 ? "updated" : "created",
-      user: req.session.user,
-      data: stories,
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+///////////////////////////STORY PAGES////////////////////////////////////
+//the story pages handle creation and manipulation of stories (the data files)
 
-router.get("/graphs", requiresLogin, async (req, res) => {
-  let graphs;
-  if(req.session.user.access > 0) {
-    graphs = await Graph.find();
-  } else {
-    graphs = await Graph.find({
-      user_ID: req.session.user.user_ID,
-    });
-  }
-  const templates = await Template.find();
+// get handler for /stories
+router.get("/stories", requiresLogin, async (req, res) => {
+  // if the user's access level is admin or higher, display all stories
+  // otherwise, only display their own
+  // sort the stories in descending order by dateEdited
   let stories;
   if(req.session.user.access > 0) {
     stories = await Story.find().sort({ dateEdited: -1 });
@@ -458,7 +303,153 @@ router.get("/graphs", requiresLogin, async (req, res) => {
       user_ID: req.session.user.user_ID,
     }).sort({ dateEdited: -1 });
   }
-  // console.log(graphs);
+
+  res.render("stories", {
+    title: "Graphite",
+    stories: "active",
+    user: req.session.user,
+    data: stories,
+  });
+});
+
+// post handler for /stories
+router.post("/stories", requiresLogin, async (req, res) => {
+  if (req.body.function == "edit") {
+    // fetch the story from the database
+    let story = await Story.find({ story_ID: req.body.ID });
+    // format the raw data back into a layout that can be parsed into the form
+    // the reformatting has to be done on the back-end because modules don't work on the front-end
+    let storyData = helper.reverseJson(JSON.parse(story[0].story));
+
+    res.render("new_story", {
+      title: "Graphite",
+      stories: "active",
+      user: req.session.user,
+      data: storyData,
+      story_ID: story[0].story_ID,
+    });
+  } else if (req.body.function == "delete") {
+    Story.findOneAndDelete({ story_ID: req.body.ID }, function (err, result) {
+      // TODO: handle errors properly
+      if (err) {
+        res.send(err);
+      }
+    });
+
+    // refresh the data
+    let stories;
+    if(req.session.user.access > 0) {
+      stories = await Story.find().sort({ dateEdited: -1 });
+    } else {
+      stories = await Story.find({
+        user_ID: req.session.user.user_ID,
+      }).sort({ dateEdited: -1 });
+    }
+
+    res.render("stories", {
+      title: "Graphite",
+      stories: "active",
+      user: req.session.user,
+      message: "deleted",
+      data: stories,
+    });
+  }
+});
+
+// get handler for /new_story
+router.get("/new_story", requiresLogin, (req, res) => {
+  res.render("new_story", {
+    title: "Graphite",
+    stories: "active",
+    user: req.session.user,
+  });
+});
+
+// post handler for /new_story
+router.post("/new_story", requiresLogin, async (req, res) => {
+  // format the story form data so it's easier to use when creating the graphs
+  let json = helper.formatJson(req.body);
+  // if the story id is already set, this means we're updating a story
+  if (req.body.story_ID >= 0) {
+    Story.findOneAndUpdate(
+      { story_ID: req.body.story_ID },
+      { story: JSON.stringify(json), dateEdited: new Date() },
+      function (err, result) {
+        // TODO: handle errors properly
+        if (err) {
+          res.send(err);
+        }
+      }
+    );
+  } else {
+    // otherwise, create a new story
+    const story = new Story({
+      user_ID: req.session.user.user_ID,
+      story: JSON.stringify(json),
+    });
+
+    //attempt to save the story
+    try {
+      const newStory = await story.save();
+    } catch (err) {
+      // TODO: handle errors properly
+      res.render("new_story", {
+        title: "Graphite",
+        stories: "active",
+        message: err.message,
+      });
+      res.status(400).json({ message: err.message });
+    }
+  }
+
+  // redirect
+  let stories;
+  if(req.session.user.access > 0) {
+    stories = await Story.find().sort({ dateEdited: -1 });
+  } else {
+    stories = await Story.find({
+      user_ID: req.session.user.user_ID,
+    }).sort({ dateEdited: -1 });
+  }
+
+  res.render("stories", {
+    title: "Graphite",
+    stories: "active",
+    message: req.body.story_ID >= 0 ? "updated" : "created",
+    user: req.session.user,
+    data: stories,
+  });
+});
+
+///////////////////////////GRAPH PAGES////////////////////////////////////
+//the graph pages handle creation and manipulation of different types of graphs
+
+// get handler for /graphs
+router.get("/graphs", requiresLogin, async (req, res) => {
+  // if the user's access level is admin or higher, display all graphs
+  // otherwise, only display their own
+  let graphs;
+  if(req.session.user.access > 0) {
+    graphs = await Graph.find();
+  } else {
+    graphs = await Graph.find({
+      user_ID: req.session.user.user_ID,
+    });
+  }
+
+  // get all the graph templates (the different types of graph)
+  const templates = await Template.find();
+  
+  // get all the stories
+  let stories;
+  if(req.session.user.access > 0) {
+    stories = await Story.find().sort({ dateEdited: -1 });
+  } else {
+    stories = await Story.find({
+      user_ID: req.session.user.user_ID,
+    }).sort({ dateEdited: -1 });
+  }
+
   res.render("graphs", {
     title: "Graphite",
     graphs: "active",
@@ -469,156 +460,37 @@ router.get("/graphs", requiresLogin, async (req, res) => {
   });
 });
 
-router.post("/graphs/:function/:id", requiresLogin, async (req, res) => {
-  if (req.params.function == "edit") {
-    try {
-      // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-      const graph = await Graph.find({ graph_ID: req.params.id });
+// post handler for /graphs
+router.post("/graphs", requiresLogin, async (req, res) => {
+  // edit the graph
+  if (req.body.function == "edit") {
+    // find all the appropriate data
+    const graph = await Graph.find({ graph_ID: req.body.ID });
 
-      const templates = await Template.find({
-        template_ID: graph[0].template_ID,
-      });
-      const stories = await Story.find({ story_ID: graph[0].story_ID });
+    const templates = await Template.find({
+      template_ID: graph[0].template_ID,
+    });
 
-      //return the ^
-      res.render("new_graph", {
-        title: "Graphite",
-        graphs: "active",
-        data: stories,
-        templateData: templates,
-        graphData: graph,
-        user: req.session.user,
-      });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  } else if (req.params.function == "delete") {
-    Graph.findOneAndDelete({ graph_ID: req.params.id }, function (err, result) {
+    const stories = await Story.find({ story_ID: graph[0].story_ID });
+
+    // load into new_graph
+    res.render("new_graph", {
+      title: "Graphite",
+      graphs: "active",
+      data: stories,
+      templateData: templates,
+      graphData: graph,
+      user: req.session.user,
+    });
+  } else if (req.body.function == "delete") {
+    Graph.findOneAndDelete({ graph_ID: req.body.ID }, function (err, result) {
+      // TODO: handle errors properly
       if (err) {
         res.send(err);
-      } else {
-        //res.send(result);
       }
     });
-    console.log("graph deleted!");
-    try {
-      let graphs;
-      if(req.session.user.access > 0) {
-        graphs = await Graph.find();
-      } else {
-        graphs = await Graph.find({
-          user_ID: req.session.user.user_ID,
-        });
-      }
-      const templates = await Template.find();
-      let stories;
-      if(req.session.user.access > 0) {
-        stories = await Story.find().sort({ dateEdited: -1 });
-      } else {
-        stories = await Story.find({
-          user_ID: req.session.user.user_ID,
-        }).sort({ dateEdited: -1 });
-      }
-      // console.log(graphs);
-      res.render("graphs", {
-        title: "Graphite",
-        graphs: "active",
-        user: req.session.user,
-        data: graphs,
-        templateData: templates,
-        storyData: stories,
-        created: "deleted",
-      });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
-});
 
-router.post("/new_graph/:template", requiresLogin, async (req, res) => {
-  console.log("STORY ID: " + req.body.storyList);
-  console.log("TEMPLATE ID: " + req.params.template);
-
-  // change this later 13 - > req.params.template
-  const templates = await Template.find({ template_ID: req.params.template });
-  const stories = await Story.find({ story_ID: req.body.storyList });
-
-  console.log(templates);
-  var graph_type = templates[0].name;
-  // if (graph_type.localeCompare("force_directed") == 0) {
-  //   res.render("force_directed");
-  // } else if (graph_type.localeCompare("bar") == 0) {
-  //   res.render("bar_chart", {
-  //     title: "Graphite",
-  //     graphs: "active",
-  //     user: req.session.user,
-  //     story_ID: req.body.storyList,
-  //     data: stories,
-  //     graph_ID: -1,
-  //     template_ID: req.params.template,
-  //     templateData: templates,
-  //     options: "random",
-  //   });
-  // } else {
-  res.render("new_graph", {
-    title: "Graphite",
-    graphs: "active",
-    user: req.session.user,
-    data: stories,
-    template_ID: req.params.template,
-    templateData: templates,
-  });
-  // }
-});
-
-router.get("/new_graph", requiresLogin, async (req, res) => {
-  res.render("new_graph", {
-    title: "Graphite",
-    graphs: "active",
-    user: req.session.user,
-  });
-});
-
-router.post("/new_graph", requiresLogin, async (req, res) => {
-  console.log(req.body);
-  let options = {
-    colour: req.body.colourSelect,
-  };
-
-  if (req.body.graph_ID >= 0) {
-    Graph.findOneAndUpdate(
-      { graph_ID: req.body.graph_ID },
-      { options: JSON.stringify(options) },
-      function (err, result) {
-        if (err) {
-          res.send(err);
-        } else {
-          //res.send(result);
-        }
-      }
-    );
-    console.log("graph updated!");
-  } else {
-    const graph = new Graph({
-      user_ID: req.session.user.user_ID,
-      story_ID: req.body.story_ID,
-      template_ID: req.body.template_ID,
-      name: req.body.name,
-      options: JSON.stringify(options),
-    });
-    try {
-      const newGraph = await graph.save();
-      //res.redirect('/stories', { title: 'Graphite', stories: 'active', user: req.session.user});
-    } catch (err) {
-      res.render("new_graph", {
-        title: "Graphite",
-        stories: "active",
-        message: err.message,
-      });
-      res.status(400).json({ message: err.message });
-    }
-  }
-  try {
+    // find all the appropriate data
     let graphs;
     if(req.session.user.access > 0) {
       graphs = await Graph.find();
@@ -628,10 +500,17 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
       });
     }
     const templates = await Template.find();
-    const stories = await Story.find({
-      user_ID: req.session.user.user_ID,
-    }).sort({ dateEdited: -1 });
-    // console.log(graphs);
+
+    let stories;
+    if(req.session.user.access > 0) {
+      stories = await Story.find().sort({ dateEdited: -1 });
+    } else {
+      stories = await Story.find({
+        user_ID: req.session.user.user_ID,
+      }).sort({ dateEdited: -1 });
+    }
+
+    // redirect
     res.render("graphs", {
       title: "Graphite",
       graphs: "active",
@@ -639,150 +518,109 @@ router.post("/new_graph", requiresLogin, async (req, res) => {
       data: graphs,
       templateData: templates,
       storyData: stories,
-      created: req.body.graph_ID >= 0 ? "updated" : "created",
+      message: "deleted",
     });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+  } else if(req.body.template_ID) {
+    // new story
+    const template = await Template.find({ template_ID: req.body.template_ID });
+
+    const story = await Story.find({ story_ID: req.body.storyList });
+
+    res.render("new_graph", {
+      title: "Graphite",
+      graphs: "active",
+      user: req.session.user,
+      data: story,
+      template_ID: req.body.template_ID,
+      templateData: template,
+    });
   }
 });
 
-router.get("/force_directed", (req, res) => {
-  res.render("force_directed");
+// get handler for /new_graph
+router.get("/new_graph", requiresLogin, async (req, res) => {
+  res.render("new_graph", {
+    title: "Graphite",
+    graphs: "active",
+    user: req.session.user,
+  });
 });
 
-// Create one subscriber
-router.post("/register", async (req, res) => {
-  const user = new User({
-    email: req.body.email,
-    password: req.body.password,
-  });
-  Counter.findByIdAndUpdate({ _id: "userID" }, { $inc: { seq: 1 } }, function (
-    error,
-    Counter
-  ) {
-    if (error) {
-      res.render("register", {
+// post handler for /new_graph
+router.post("/new_graph", requiresLogin, async (req, res) => {
+  // format the options for the graph
+  let options = {
+    colour: req.body.colourSelect,
+  };
+
+  // if the graph id is >= 0 we're editing a graph
+  if (req.body.graph_ID >= 0) {
+    Graph.findOneAndUpdate(
+      { graph_ID: req.body.graph_ID },
+      { options: JSON.stringify(options) },
+      function (err, result) {
+        // TODO: handle errors properly
+        if (err) {
+          res.send(err);
+        }
+      }
+    );
+  } else {
+    // otherwise create a new graph
+    const graph = new Graph({
+      user_ID: req.session.user.user_ID,
+      story_ID: req.body.story_ID,
+      template_ID: req.body.template_ID,
+      name: req.body.name,
+      options: JSON.stringify(options),
+    });
+
+    try {
+      const newGraph = await graph.save();
+    } catch (err) {
+      // TODO: handle errors properly
+      res.render("new_graph", {
         title: "Graphite",
-        login: "active",
+        stories: "active",
         message: err.message,
       });
+      res.status(400).json({ message: err.message });
     }
-    user.user_ID = Counter.seq;
-  });
-  console.log(user);
-  try {
-    const newUser = await user.save();
-    console.log(newUser);
-  } catch (err) {
-    res.render("register", {
-      title: "Graphite",
-      login: "active",
-      message: err.message,
-    });
-    res.status(400).json({ message: err.message });
   }
-  req.session.user = user;
-  res.render("index", {
-    title: "Graphite",
-    home: "active",
-    user: req.session.user,
-  });
-});
 
-router.post("/login", authenticateUser, async (req, res) => {});
-
-router.get("/login", async (req, res) => {
-  res.render("login", {
-    title: "Graphite",
-    login: "active",
-    user: req.session.user,
-  });
-});
-
-router.get("/", async (req, res) => {
-  res.redirect("/", {
-    title: "Graphite",
-    home: "active",
-    user: req.session.user,
-  });
-});
-
-router.get("/register", async (req, res) => {
-  res.render("register", {
-    title: "Graphite",
-    login: "active",
-    user: req.session.user,
-  });
-});
-
-router.get("/all", async (req, res) => {
-  // User.findOneAndUpdate({email: "test3@test.com"}, {user_ID: 4}, function(err, result) {
-  //   if (err) {
-  //     res.send(err);
-  //   } else {
-  //     res.send(result);
-  //   }
-  // });
-  try {
-    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const users = await User.find();
-    //return the ^
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-router.get("/all_stories", async (req, res) => {
-  // User.findOneAndUpdate({email: "test3@test.com"}, {user_ID: 4}, function(err, result) {
-  //   if (err) {
-  //     res.send(err);
-  //   } else {
-  //     res.send(result);
-  //   }
-  // });
-  try {
-    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const stories = await Story.find();
-    //return the ^
-    res.json(stories);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-router.get("/all_templates", async (req, res) => {
-  // Template.findOneAndUpdate({name: "tree"}, {description: "Unfortunately, this isn't an actual tree. It's a tree diagram, but they're still pretty cool. :P"}, function(err, result) {
-  //   if (err) {
-  //     res.send(err);
-  //   } else {
-  //     res.send(result);
-  //   }
-  // });
-  try {
-    // Mongoose method works by returning all associated subscriber objects that meet its criteria.
-    const templates = await Template.find();
-    //return the ^
-    res.json(templates);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-router.get("/logout", async (req, res) => {
-  if (req.session) {
-    // delete session object
-    req.session.destroy(function (err) {
-      if (err) {
-        return next(err);
-      } else {
-        res.render("login", { title: "Graphite", login: "active", user: null });
-      }
+  // fetch all the appropriate data
+  let graphs;
+  if(req.session.user.access > 0) {
+    graphs = await Graph.find();
+  } else {
+    graphs = await Graph.find({
+      user_ID: req.session.user.user_ID,
     });
   }
+
+  const templates = await Template.find();
+  
+  const stories = await Story.find({
+    user_ID: req.session.user.user_ID,
+  }).sort({ dateEdited: -1 });
+  
+  // redirect
+  res.render("graphs", {
+    title: "Graphite",
+    graphs: "active",
+    user: req.session.user,
+    data: graphs,
+    templateData: templates,
+    storyData: stories,
+    message: req.body.graph_ID >= 0 ? "updated" : "created",
+  });
 });
 
+//////////////////////////////VALIDATION FUNCTIONS/////////////////////////////////////
+
+// function to make sure a user is logged in
 async function requiresLogin(req, res, next) {
+  // TODO: handle errors properly
   if (req.session.user) {
     return next();
   } else {
@@ -795,7 +633,9 @@ async function requiresLogin(req, res, next) {
   }
 }
 
+// function to make sure an admin is logged in
 async function requiresAdmin(req, res, next) {
+  // TODO: handle errors properly
   if (req.session.user) {
     if(req.session.user.access > 0) {
       return next();
@@ -817,10 +657,11 @@ async function requiresAdmin(req, res, next) {
   }
 }
 
+// function to authenticate a user
 async function authenticateUser(req, res, next) {
-  console.log("beginning of function");
+  // TODO: handle errors properly
+  // no email supplied
   if (!req.body.email) {
-    console.log("first one");
     res.render("login", {
       title: "Graphite",
       login: "active",
@@ -828,8 +669,9 @@ async function authenticateUser(req, res, next) {
     });
     return res.status(404).json({ message: "Please enter an email." });
   }
+
+  //no password supplied
   if (!req.body.password) {
-    console.log("first one");
     res.render("login", {
       title: "Graphite",
       login: "active",
@@ -837,10 +679,12 @@ async function authenticateUser(req, res, next) {
     });
     return res.status(404).json({ message: "Please enter a password." });
   }
-  //Mongo reads the JSON stores as object directly
+
+  // search for users
   user = await User.findOne({ email: req.body.email });
+
+  // no user found
   if (user == null) {
-    console.log("second one");
     res.render("login", {
       title: "Graphite",
       login: "active",
@@ -848,10 +692,8 @@ async function authenticateUser(req, res, next) {
     });
     return res.status(404).json({ message: "Unknown user." });
   }
-  // if (req.body.email.localeCompare("test@test.com") == 0) {
-  //   req.session.user = user;
-  //   res.redirect("/");c
-  // }
+
+  // check the password matches
   user.comparePassword(req.body.password, (err, isMatch) => {
     if (err) throw err;
     if (!isMatch) {
@@ -860,16 +702,11 @@ async function authenticateUser(req, res, next) {
         login: "active",
         message: "Wrong password.",
       });
-      // return res.status(400).json({
-      //   message: "Wrong password"
-      // });
     }
     req.session.user = user;
-    // res.status(200).send("Login successfully");
     res.redirect("/");
   });
-  // req.session.user = user;
-  //allows the code to move on to the next part of the code
+
   next();
 }
 

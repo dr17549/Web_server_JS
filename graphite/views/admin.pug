@@ -3,12 +3,13 @@ extends layout
 block content
   h1 Admin
   p Here you can manage all the users.
-  if created
-    .alert.alert-success(role="alert")= "User " + created + "!"
+  if message
+    .alert.alert-success(role="alert")= "User " + message + "!"
   
   .card.cardbody
     if data != ""
       form(action="/admin" method="POST")
+        input#ID_1.form-control(type="number" name="ID_1" style="visibility: hidden; display: none")
         table.table.table-hover
           thead
             tr
@@ -53,8 +54,7 @@ block content
             span(aria-hidden='true') &times;
         form(action='/admin' method='POST')
           .modal-body
-            .form-group
-              input#ID.form-control(type="number" name="ID" style="visibility: hidden; display: none")
+            input#ID_2.form-control(type="number" name="ID_2" style="visibility: hidden; display: none")
             .form-group
               label(for="email") Email:
               input#email.form-control(name="email" type="email")

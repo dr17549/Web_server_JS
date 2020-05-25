@@ -11,6 +11,7 @@ $(".deletebutton").on("click", function(event) {
     let id = $(event.target).closest('button')[0].id;
     let match = /del([0-9]+)/.exec(id);
     user = match[1];
+    $("#ID_1").val(user);
 });
 
 $(".editbutton").on("click", function(event) {
@@ -18,7 +19,7 @@ $(".editbutton").on("click", function(event) {
     let match = /edit([0-9]+)/.exec(id);
     user = match[1];
     let userData = findData(user);
-    $("#ID").val(userData.user_ID);
+    $("#ID_2").val(userData.user_ID);
     $("#email").val(userData.email);
     $("#access").val(userData.access);
 
@@ -30,7 +31,6 @@ $("#edityes").click(function() {
   });
 
 $("#delyes").click(function() {
-    document.forms[0].action += '/delete/' + user;
     document.forms[0].submit();
   });
 

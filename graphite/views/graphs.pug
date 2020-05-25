@@ -4,8 +4,8 @@ block content
   h1 My Graphs
   p Here you can view and edit your different visualisations! Amazing!
 
-  if created
-    .alert.alert-success(role="alert")= (created == "created" ? "New graph " : "Graph ") + created + "!"
+  if message
+    .alert.alert-success(role="alert")= (message == "created" ? "New graph " : "Graph ") + message + "!"
 
   h2 Create a New Graph
   p Choose from one of the templates below:
@@ -26,6 +26,8 @@ block content
   h2(style="margin-top: 0.5rem") Edit an Existing Graph
   if data != ""
     form(action="/graphs" method="POST")
+      input#ID.form-control(type="number" name="ID" style="visibility: hidden; display: none")
+      input#function.form-control(type="text" name="function" style="visibility: hidden; display: none")
       ul.list-group
         each val in data
           li.list-group-item
@@ -50,7 +52,8 @@ block content
         .modal-body
           p Select a story to add to your graph.
           if storyData != ""
-            form(action="/new_graph" method="POST" id='new_graph')
+            form(action="/graphs" method="POST" id='new_graph')
+              input#template_ID.form-control(type="number" name="template_ID" style="visibility: hidden; display: none")
               .form-group
                 label(for="storyList") Your stories:
                 select#storyList.form-control(name="storyList")
