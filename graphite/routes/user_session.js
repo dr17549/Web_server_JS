@@ -10,6 +10,8 @@ const bcrypt = require("bcrypt");
 const helper = require("./helper.js");
 const nodemailer = require("nodemailer");
 
+startup();
+
 //////////////////////////////BASE PAGES////////////////////////////////
 
 // get handler for /
@@ -739,5 +741,102 @@ router.use(function (req,res,next){
     error: "Whoops! The server took too long to respond."
   });
 });
+
+// sets up the required fields in the database for the site to run, as well as an example story
+async function startup() {
+  let userID = await Counter.findOne({_id: "userID"});
+  if(!userID) {
+    let userID = await new Counter({
+      _id: "userID",
+      seq: 0,
+    }).save();
+  }
+
+  let storyID = await Counter.findOne({_id: "storyID"});
+  if(!storyID) {
+    let storyID = await new Counter({
+      _id: "storyID",
+      seq: 0,
+    }).save();
+  }
+
+  let templateID = await Counter.findOne({_id: "templateID"});
+  if(!templateID) {
+    let templateID = await new Counter({
+      _id: "templateID",
+      seq: 0,
+    }).save();
+  }
+
+  let graphID = await Counter.findOne({_id: "graphID"});
+  if(!graphID) {
+    let graphID = await new Counter({
+      _id: "graphID",
+      seq: 0,
+    }).save();
+  }
+
+  let force_directed = await Template.findOne({name: "force_directed"});
+  if(!force_directed) {
+    let force_directed = await new Template({
+      user_ID: 0,
+      name: "force_directed",
+      description: "A force directed graph is used to show character co-occurence within chapters."
+    }).save();
+  }
+
+  let bar = await Template.findOne({name: "bar"});
+  if(!bar) {
+    let bar = await new Template({
+      user_ID: 0,
+      name: "bar",
+      description: "A bar chart can be used to show the sizes of the chapters."
+    }).save();
+  }
+
+  let line = await Template.findOne({name: "line"});
+  if(!line) {
+    let line = await new Template({
+      user_ID: 0,
+      name: "line",
+      description: "A line graph shows how often characters appear over the chapters."
+    }).save();
+  }
+
+  let tree = await Template.findOne({name: "tree"});
+  if(!tree) {
+    let tree = await new Template({
+      user_ID: 0,
+      name: "tree",
+      description: "A tree diagram shows the hierarchy of chapter levels."
+    }).save();
+  }
+
+  let appearance = await Template.findOne({name: "appearance"});
+  if(!appearance) {
+    let appearance = await new Template({
+      user_ID: 0,
+      name: "appearance",
+      description: "A horizontal bar chart can show characters' total appearances."
+    }).save();
+  }
+
+  let admin = await User.findOne({user_ID: 0});
+  if(!admin) {
+    let admin = await new User({
+      email: "test@test.com",
+      password: "testtest",
+      access: 1,
+    }).save();
+  }
+
+  let odyssey = await Story.findOne({story_ID: 0});
+  if(!odyssey) {
+    let odyssey = await new Story({
+      user_ID: 0,
+      story: "{\"1\":{\"name\":\"Book I\",\"level\":\"1\",\"size\":\"4135\",\"characters\":\"Neptune,Minerva,Jove,Telemachus,Maids,Suitors,Phemius,Penelope,Antinous,Eurymachus\",\"mentions\":\"Muse,Hyperion,Ulysses,Calypso,Aegisthus,Agamemnon,Orestes,Mercury,Saturn,Atlas,Polyphemus,Thoosa,Phorcys,Telemachus,Penelope,Mentes\",\"extra\":\"\"},\"2\":{\"name\":\"Book II\",\"level\":\"1\",\"size\":\"4229\",\"characters\":\"Telemachus,Aegyptius,Pisenor,Antinous,Halitherses,Eurymachus,Mentor,Leiocritus,Minerva,Euryclea\",\"mentions\":\"\",\"extra\":\"\"},\"3\":{\"name\":\"Book III\",\"level\":\"1\",\"size\":\"4723\",\"characters\":\"Telemachus,Minerva,Nestor,Pisistratus,Polycaste\",\"mentions\":\"\",\"extra\":\"\"},\"4\":{\"name\":\"Book IV\",\"level\":\"1\",\"size\":\"8089\",\"characters\":\"Menelaus,Eteoneus,Telemachus,Pisistratus,Helen,Adraste,Alcippe,Phylo,Asphalion,Proteus,Noemon,Antinous,Eurymachus,Penelope,Medon,Euryclea,Minerva\",\"mentions\":\"\",\"extra\":\"\"},\"5\":{\"name\":\"Book V\",\"level\":\"1\",\"size\":\"4699\",\"characters\":\"Minerva,Jove,Mercury,Calypso,Ulysses,Neptune,Ino\",\"mentions\":\"\",\"extra\":\"\"},\"6\":{\"name\":\"Book VI\",\"level\":\"1\",\"size\":\"3450\",\"characters\":\"Ulysses,Minerva,Nausicaa,Alcinous,Nausicaa's Maids\",\"mentions\":\"\",\"extra\":\"\"},\"7\":{\"name\":\"BOOK VII\",\"level\":\"1\",\"size\":\"3364\",\"characters\":\"Ulysses,Eurymedusa,Nausicaa,Alcinous,Minerva,Arete,Echeneus,Laodamas,Pontonous\",\"mentions\":\"\",\"extra\":\"\"},\"8\":{\"name\":\"BOOK VIII\",\"level\":\"1\",\"size\":\"5614\",\"characters\":\"Alcinous,Ulysses,Minerva,Demodocus,Pontonous,Laodamas,Euryalus,Venus,Mars,Vulcan,Jove,Apollo,Mercury,Neptune,Halius,Arete,Nausicaa\",\"mentions\":\"\",\"extra\":\"\"},\"9\":{\"name\":\"BOOK IX\",\"level\":\"1\",\"size\":\"5824\",\"characters\":\"Ulysses,Cicons,Lotus-eaters,Cyclopes,Polyphemus,Sailors,Neptune\",\"mentions\":\"\",\"extra\":\"\"},\"10\":{\"name\":\"BOOK X\",\"level\":\"1\",\"size\":\"5705\",\"characters\":\"Ulysses,Sailors,Aeolus,Laestrygonians,Antiphates,Antiphates' Daughter,Eurylochus,Circe,Polites,Mercury,Circe's Maids,Elpenor\",\"mentions\":\"\",\"extra\":\"\"},\"title\":\"The Odyssey\",\"author\":\"Homer\",\"wordcount\":\"117560\",\"levelName1\":\"Books\"}",
+    }).save();
+  }
+}
 
 module.exports = router;
