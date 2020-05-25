@@ -144,20 +144,28 @@ function get_lined_data(display_data) {
   console.log(display_data);
   keys = Object.keys(display_data);
   var unique_characters = [];
+  var unique_colors = [];
   // get unique character
   var dataset = get_appearance_data(display_data);
   for (var i = 0; i < dataset.length; i++) {
     unique_characters.push(dataset[i]["character"]);
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const set_color = "#" + randomColor;
+    unique_colors.push(set_color);
   }
   return_data["unique_characters"] = unique_characters;
   return_data["dataset"] = [];
+  return_data["unique_colors"] = unique_colors;
   var max = 0;
   if (display_data.wordcount && display_data.title) {
     for (const [key, value] of Object.entries(display_data)) {
+      if (parseInt(value.size) > max) {
+        max = parseInt(value.size);
+      }
+
       if (key != "title" && key != "wordcount") {
         var info = {};
         info["Chapter"] = key;
-        if (value.size > max) max = value.size;
         for (var i in unique_characters) {
           info[unique_characters[i]] = 0;
         }
