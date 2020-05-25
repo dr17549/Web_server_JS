@@ -192,10 +192,10 @@ function get_level_children(position, level, levels) {
     let regex = /^\d+$/;
     let match = key.match(regex);
     if (match && match > position) {
-      if (levels.indexOf(value.level) == levels.indexOf(level) + 1) {
+      if(levels.indexOf(value.level) == (levels.indexOf(level) + 1)) {
         children.push({
           name: value.name ? value.name : "Chapter " + key,
-          children: get_level_children(key, value.level, levels),
+          children: get_level_children(key, value.level, levels).concat([{name: value.size ? value.size : 0}, {name: value.characters ? value.characters : "no characters"}])
         });
       } else if (value.level == level) break;
     }
