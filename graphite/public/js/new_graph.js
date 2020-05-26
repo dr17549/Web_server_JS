@@ -1,3 +1,5 @@
+var width = 960;
+var height = 600;
 let options = graph.options ? JSON.parse(graph.options) : {};
 if (options.colour) {
   $("#colourSelect").val(options.colour);

@@ -3,7 +3,16 @@ var collapse_tree = {
     d3.select("#linkStrength")
       .style("display", "none")
       .style("invisbility", "hidden");
+    d3.select("#label_options")
+      .style("display", "none")
+      .style("invisbility", "hidden");
     d3.select("#colourSelect")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#LS_colour")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#LS_label")
       .style("display", "none")
       .style("invisbility", "hidden");
 

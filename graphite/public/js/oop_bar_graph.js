@@ -1,8 +1,5 @@
 var initBarGraph = {
   draw: function (data) {
-    d3.select("#linkStrength")
-      .style("display", "none")
-      .style("invisbility", "hidden");
 
     var margin = { top: 40, right: 30, bottom: 30, left: 50 },
       width = 460 * 1.5 - margin.left - margin.right,

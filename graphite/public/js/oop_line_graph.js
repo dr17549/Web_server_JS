@@ -1,7 +1,15 @@
 var line_graph = {
   append: function (data) {
-
+    d3.select("#colourSelect")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#LS_colour")
+      .style("display", "none")
+      .style("invisbility", "hidden");
     d3.select("#linkStrength")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#LS_label")
       .style("display", "none")
       .style("invisbility", "hidden");
 
