@@ -183,3 +183,102 @@ var line_graph = {
     }
   },
 };
+
+function get_lined_data(display_data) {
+  var return_data = {};
+  console.log(display_data);
+  keys = Object.keys(display_data);
+  var unique_characters = [];
+  var unique_colors = [];
+  // get unique character
+  var dataset = get_appearance_data(display_data);
+  for (var i = 0; i < dataset.length; i++) {
+    unique_characters.push(dataset[i]["character"]);
+    const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    const set_color = "#" + randomColor;
+    unique_colors.push(set_color);
+  }
+  return_data["unique_characters"] = unique_characters;
+  return_data["dataset"] = [];
+  return_data["unique_colors"] = unique_colors;
+  var max = 0;
+  if (display_data.wordcount && display_data.title) {
+    for (const [key, value] of Object.entries(display_data)) {
+      if (parseInt(value.size) > max) {
+        max = parseInt(value.size);
+      }
+
+      if (key != "title" && key != "wordcount") {
+        var info = {};
+        info["Chapter"] = key;
+        for (var i in unique_characters) {
+          info[unique_characters[i]] = 0;
+        }
+        if (value.characters != undefined) {
+          if (value.characters.length > 0) {
+            list = value.characters.split(",");
+            list.forEach(function (element) {
+              element = element.trim();
+              info[element] = value.size;
+            });
+          }
+        }
+        return_data["dataset"].push(info);
+      }
+    }
+  }
+  return_data["max"] = max;
+  console.log(return_data);
+  return return_data;
+}
+
+function line_change_color(color, select) {
+  //document.getElementById("save_color").value = color;
+  var chosen;
+  if (color.localeCompare("blue") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(0, 40),
+            getRndInteger(20, 230)
+          )
+        );
+      });
+  } else if (color.localeCompare("red") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(20, 240),
+            getRndInteger(0, 40),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else if (color.localeCompare("green") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(20, 240),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else {
+    console.log("random");
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .attr("stroke", randomColor);
+  }
+}

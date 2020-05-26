@@ -1,3 +1,4 @@
+// drag and drop events for the levels
 function allowDrop(ev) {
   ev.preventDefault();
 }
@@ -6,6 +7,7 @@ function drag(ev) {
   ev.dataTransfer.setData("text", ev.target.id);
 }
 
+// row and column ids are used to figure out which level has been dropped into
 function drop(ev) {
   let match = /row([0-9]+)/.exec($(ev.target).closest(".levelRow")[0].id);
   let row = match[1];
@@ -31,6 +33,7 @@ function drop(ev) {
   }
 }
 
+// the template for a new chapter card
 let addChapterCard = function(data, chapter, oldChapter = true) {
   $("#levelTable").append(`
     <tr id="${"row" + chapter}" class="levelRow">
@@ -87,24 +90,7 @@ let addChapterCard = function(data, chapter, oldChapter = true) {
   }
 };
 
-let levels = 1;
-let levelList = [];
-
-if(data.level1) {
-  for(const [key, value] of Object.entries(data)) {
-    let regex = /(\D+)(\d+)/;
-    let match = key.match(regex);
-    if(match) {
-      if(match[1] == "levelName") {
-        if(!levelList.includes(match[2])) levelList.push(match[2]);
-        if(match[2] > levels) levels = match[2];
-      }
-    }
-  }
-}
-
-if(levelList.length == 0) levelList.push("1");
-
+// template for a level column
 let addLevel = function(level) {
   $("#levelHead").append(`
     <th>
@@ -124,6 +110,30 @@ let addLevel = function(level) {
   `);
 };
 
+// init the page
+
+let levels = 1;
+let levelList = [];
+
+// see how many levels the loaded data has already
+// important because the level numbers are always in order, but not necessarily contiguous (e.g. if some have been deleted)
+if(data.level1) {
+  for(const [key, value] of Object.entries(data)) {
+    let regex = /(\D+)(\d+)/;
+    let match = key.match(regex);
+    if(match) {
+      if(match[1] == "levelName") {
+        if(!levelList.includes(match[2])) levelList.push(match[2]);
+        if(match[2] > levels) levels = match[2];
+      }
+    }
+  }
+}
+
+// must have at least one level
+if(levelList.length == 0) levelList.push("1");
+
+// add the levels to the table
 levelList.forEach((level) => {
   addLevel(level);
   $(".levelRow").each(function(index, el) {
@@ -131,6 +141,8 @@ levelList.forEach((level) => {
   });
 });
 
+// init variables such as total chapters, chapter count, total level and level count etc.
+// ensures chapters and levels have unique ids
 let levelCount = levelList.length;
 let dellevel = 0;
 
@@ -141,6 +153,7 @@ let collapse = true;
 
 let chaptersToAdd = [];
 
+// code to load in chapters when editing a story
 for(const [key, value] of Object.entries(data)) {
   let regex = /(\D+)(\d+)/;
   let match = key.match(regex);
@@ -156,11 +169,16 @@ if(chaptersToAdd.length > 0) {
   chapterCount = chaptersToAdd.length;
 }
 
+// otherwise start with a blank chapter
 if(chapters == 0) {
   chapters++;
   chapterCount++;
   addChapterCard(data, chapters, levels);
 }
+
+// function to add and delete levels
+// need to keep track of level numbers etc.
+// also need to move all chapters in a deleted level to the level below
 
 let addLevelFunction = function() {
   levels++;
@@ -197,8 +215,10 @@ $("#dellevelyes").click(function() {
   });
   levelCount--;
   levelList.splice(levelIndex, 1);
-  //chapters--;
 });
+
+// functions to add and delete chapters
+// have to keep track of the chapter numbers
 
 let addChapterFunction = function() {
   chapters++;
@@ -223,9 +243,9 @@ $("#delyes").click(function() {
   console.log(del);
   $("#del" + del).closest("tr").remove();
   chapterCount--;
-  //chapters--;
 });
 
+// function to collapse all chapters
 $("#collapseall").click(function(event) {
   if(collapse) {
     $(".card > .show").collapse('hide');

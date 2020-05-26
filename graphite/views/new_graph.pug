@@ -45,6 +45,8 @@ block content
                   option(name="blue" value='blue') Blue
                   option(name="green" value='green') Green
                   option(name="random" value='random') Random
+        //- these options weren't implemented in time
+        
         //- .row.align-items-center
         //-   .col
         //-     .d-inline-flex.justify-content-center
@@ -79,10 +81,13 @@ block content
         .form-group(style="margin-top:0.5em; margin-bottom:0.5rem")
           button.btn.btn-primary(type='button' id="Download") Download as .PNG
 
+  //- data has to be passed from back-end scripts to front-end scripts like this
   script(type="text/javascript") let data = !{JSON.stringify(data[0].story)}; let template = !{JSON.stringify(templateData[0])}; let graph = !{graphData ? JSON.stringify(graphData[0]) : "{}"};
-  script(src="/js/bar.js")
+  //- a hacky solution to front-end modules
+  script(src="/js/oop_bar.js")
   script(src="/js/oop_horizontal_bar.js")
   script(src="/js/oop_collapse_tree.js")
   script(src="/js/oop_force_directed.js")
   script(src="/js/oop_line_graph.js")
+  
   script(src="/js/new_graph.js")

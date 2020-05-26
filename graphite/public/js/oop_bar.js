@@ -1,5 +1,5 @@
 var bar = {
-  draw: function (data) {
+  draw: function (dataset) {
     d3.select("#linkStrength")
       .style("display", "none")
       .style("invisbility", "hidden");
@@ -42,7 +42,6 @@ var bar = {
         return d.value;
       }),
     ]);
-    // y.domain([0, 10]);
     //axis label
     svg
       .append("text")
@@ -85,11 +84,6 @@ var bar = {
         return height;
       })
       .attr("height", 0)
-      // .transition()
-      // .duration(750)
-      // .delay(function (d, i) {
-      //   return i * 150;
-      // })
       .attr("y", (d) => {
         return y(d.value);
       })
@@ -137,96 +131,65 @@ var bar = {
     if (options.colour) changeColor(options.colour);
   },
 };
-// // has to change
-// function changeColor(color) {
-//   //document.getElementById("save_color").value = color;
-//   var chosen;
-//   if (color.localeCompare("blue") == 0) {
-//     d3.selectAll("rect")
-//       .transition()
-//       .duration(2000)
-//       .style("fill", function (d) {
-//         return d3.color(
-//           d3.rgb(
-//             getRndInteger(0, 40),
-//             getRndInteger(0, 40),
-//             getRndInteger(20, 230)
-//           )
-//         );
-//       });
-//   } else if (color.localeCompare("red") == 0) {
-//     d3.selectAll("rect")
-//       .transition()
-//       .duration(2000)
-//       .style("fill", function (d) {
-//         return d3.color(
-//           d3.rgb(
-//             getRndInteger(20, 240),
-//             getRndInteger(0, 40),
-//             getRndInteger(0, 40)
-//           )
-//         );
-//       });
-//   } else if (color.localeCompare("green") == 0) {
-//     d3.selectAll("rect")
-//       .transition()
-//       .duration(2000)
-//       .style("fill", function (d) {
-//         return d3.color(
-//           d3.rgb(
-//             getRndInteger(0, 40),
-//             getRndInteger(20, 240),
-//             getRndInteger(0, 40)
-//           )
-//         );
-//       });
-//   } else {
-//     console.log("random");
-//     d3.selectAll("rect").transition().duration(2000).style("fill", randomColor);
-//   }
-// }
 
-// function getRndInteger(min, max) {
-//   return Math.floor(Math.random() * (max - min)) + min;
-// }
+let get_bar_data = function(display_data) {
+  let bar_data = [];
+  if (display_data.wordcount && display_data.title) {
+    for (const [key, value] of Object.entries(display_data)) {
+      let regex = /^\d+$/;
+      let match = key.match(regex);
+      if (match) {
+        bar_data.push({ chapter: key, value: value.size });
+      }
+    }
+  }
+  return bar_data;
+};
 
-// var randomColor = (function () {
-//   var golden_ratio_conjugate = 0.618033988749895;
-//   var h = Math.random();
-
-//   var hslToRgb = function (h, s, l) {
-//     var r, g, b;
-
-//     if (s == 0) {
-//       r = g = b = l; // achromatic
-//     } else {
-//       function hue2rgb(p, q, t) {
-//         if (t < 0) t += 1;
-//         if (t > 1) t -= 1;
-//         if (t < 1 / 6) return p + (q - p) * 6 * t;
-//         if (t < 1 / 2) return q;
-//         if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-//         return p;
-//       }
-
-//       var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-//       var p = 2 * l - q;
-//       r = hue2rgb(p, q, h + 1 / 3);
-//       g = hue2rgb(p, q, h);
-//       b = hue2rgb(p, q, h - 1 / 3);
-//     }
-
-//     return (
-//       "#" +
-//       Math.round(r * 255).toString(16) +
-//       Math.round(g * 255).toString(16) +
-//       Math.round(b * 255).toString(16)
-//     );
-//   };
-
-//   return function () {
-//     h += golden_ratio_conjugate;
-//     h %= 1;
-//     return hslToRgb(h, 0.5, 0.6);
-//   };
-// })();
+function bar_change_color(color, select) {
+  //document.getElementById("save_color").value = color;
+  var chosen;
+  if (color.localeCompare("blue") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .style("fill", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(0, 40),
+            getRndInteger(20, 230)
+          )
+        );
+      });
+  } else if (color.localeCompare("red") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .style("fill", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(20, 240),
+            getRndInteger(0, 40),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else if (color.localeCompare("green") == 0) {
+    d3.selectAll(select)
+      .transition()
+      .duration(2000)
+      .style("fill", function (d) {
+        return d3.color(
+          d3.rgb(
+            getRndInteger(0, 40),
+            getRndInteger(20, 240),
+            getRndInteger(0, 40)
+          )
+        );
+      });
+  } else {
+    console.log("random");
+    d3.selectAll(select).transition().duration(2000).style("fill", randomColor);
+  }
+}

@@ -84,3 +84,33 @@ var horizontal_bar = {
     if (options.colour) changeColor(options.colour);
   },
 };
+
+function get_appearance_data(data) {
+  var dataset = [];
+  // console.log(display_data);
+  if (display_data.wordcount && display_data.title) {
+    for (const [key, value] of Object.entries(display_data)) {
+      if (value.characters != undefined) {
+        if (value.characters.length > 0) {
+          list = value.characters.split(",");
+          list.forEach(function (element) {
+            element = element.trim();
+            found = false;
+            for (var i = 0; i < dataset.length; i++) {
+              if (dataset[i]["character"] == element) {
+                found = true;
+                dataset[i]["value"] += 1;
+              }
+            }
+            if (found == false) {
+              dataset[i] = {};
+              dataset[i]["character"] = element;
+              dataset[i]["value"] = 1;
+            }
+          });
+        }
+      }
+    }
+  }
+  return dataset;
+}
