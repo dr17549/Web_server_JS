@@ -1,5 +1,9 @@
 var horizontal_bar = {
   draw: function (data) {
+    d3.select("#linkStrength")
+    .style("display", "none")
+    .style("invisbility", "hidden");
+    
     console.log(data);
     var margin = { top: 20, right: 20, bottom: 60, left: 60 },
       width = 920 - margin.left - margin.right,

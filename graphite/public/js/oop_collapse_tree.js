@@ -1,5 +1,12 @@
 var collapse_tree = {
   draw: function (data) {
+    d3.select("#linkStrength")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#colourSelect")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+
     // Set the dimensions and margins of the diagram
     var margin = { top: 20, right: 90, bottom: 30, left: 90 },
       width = 960 - margin.left - margin.right,
