@@ -16,13 +16,15 @@ block content
           li.list-group-item
             .d-flex.justify-content-between
               .d-flex
-                button.btn.btn-outline-danger.deletebutton(id="del" + val.story_ID, type="button", style="margin-right: 0.5rem")
-                  i.fas.fa-trash-alt
+                abbr(title="Delete")
+                  button.btn.btn-outline-danger.deletebutton(id="del" + val.story_ID, type="button", style="margin-right: 0.5rem")
+                    i.fas.fa-trash-alt
               .d-flex.align-items-center
                 p(style="margin-bottom:0")= JSON.parse(val.story).title
               .d-flex
-                button.btn.btn-outline-primary.editbutton(id="edit" + val.story_ID, type="submit", style="margin-left: 0.5rem")
-                  i.fas.fa-edit
+                abbr(title="Edit")
+                  button.btn.btn-outline-primary.editbutton(id="edit" + val.story_ID, type="submit", style="margin-left: 0.5rem")
+                    i.fas.fa-edit
   else
     p You have no stories yet!
             

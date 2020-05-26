@@ -42,14 +42,18 @@ let addChapterCard = function(data, chapter, oldChapter = true) {
           <div class="card-header" id="heading${chapter}" data-toggle="collapse" data-target="#collapse${chapter}" aria-expanded="false" aria-controls="collapse${chapter}">
             <div class="d-flex justify-content-between">
               <div class="d-flex" onclick="event.stopPropagation()">
-                <button class="delchapter btn btn-outline-danger" id="del${chapter}" type="button" onclick="delChapterFunction(event)"><i class="fas fa-minus-circle"></i></button>
+                <abbr title="Remove Chapter">
+                  <button class="delchapter btn btn-outline-danger" id="del${chapter}" type="button" onclick="delChapterFunction(event)"><i class="fas fa-minus-circle"></i></button>
+                </abbr>
               </div>
               <div class="d-flex align-content-center">
                 <input class="form-control" id="name${chapter}" type="text" name="name${chapter}" placeholder="Chapter ${chapter}" 
                   value="${oldChapter && story_ID.value >= 0 ? data["name" + chapter] : ''}" onclick="event.stopPropagation()" />
               </div>
               <div class="d-flex" onclick="event.stopPropagation()">
-                <button class="addchapter btn btn-outline-primary" id="add${chapter}" type="button" onclick="addChapterFunction()"><i class="fas fa-plus-circle"></i></button>
+                <abbr title="Add Chapter">
+                  <button class="addchapter btn btn-outline-primary" id="add${chapter}" type="button" onclick="addChapterFunction()"><i class="fas fa-plus-circle"></i></button>
+                </abbr>
               </div>
             </div>
           </div>
@@ -96,13 +100,17 @@ let addLevel = function(level) {
     <th>
       <div class="d-flex justify-content-between">
         <div class="d-flex" onclick="event.stopPropagation()">
-          <button class="dellevel btn btn-outline-danger" id="delLevel${level}" type="button" onclick="delLevelFunction(event)"><i class="fas fa-minus-circle"></i></button>
+          <abbr title="Remove Level">
+            <button class="dellevel btn btn-outline-danger" id="delLevel${level}" type="button" onclick="delLevelFunction(event)"><i class="fas fa-minus-circle"></i></button>
+          </abbr>
         </div>
         <div class="d-flex align-content-center">
           <input id="levelName${level}" class="form-control" type="text" name="levelName${level}" value="${data["levelName" + level] ? data["levelName" + level] : 'Level ' + level}" />
         </div>
         <div class="d-flex" onclick="event.stopPropagation()">
-          <button class="addlevel btn btn-outline-primary" id="addLevel${level}" type="button" onclick="addLevelFunction()"><i class="fas fa-plus-circle"></i></button>
+          <abbr title="Add Level">
+            <button class="addlevel btn btn-outline-primary" id="addLevel${level}" type="button" onclick="addLevelFunction()"><i class="fas fa-plus-circle"></i></button>
+          </abbr>
         </div>
       </div>
       

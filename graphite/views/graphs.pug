@@ -32,13 +32,15 @@ block content
         each val in data
           li.list-group-item
             .d-inline-flex.justify-content-start
-              button.btn.btn-outline-danger.deletebutton(id="del" + val.graph_ID, type="button", style="margin-right: 0.5rem")
-                i.fas.fa-trash-alt
+              abbr(title="Delete")
+                button.btn.btn-outline-danger.deletebutton(id="del" + val.graph_ID, type="button", style="margin-right: 0.5rem")
+                  i.fas.fa-trash-alt
             .d-inline-flex.justify-content-center
               p= val.name
             .d-inline-flex.justify-content-end
-              button.btn.btn-outline-primary.editbutton(id="edit" + val.graph_ID, type="submit", style="margin-left: 0.5rem")
-                i.fas.fa-edit
+              abbr(title="Edit")
+                button.btn.btn-outline-primary.editbutton(id="edit" + val.graph_ID, type="submit", style="margin-left: 0.5rem")
+                  i.fas.fa-edit
   else
     p You have no graphs yet!
 
