@@ -27,7 +27,7 @@ describe("test google.com", () => {
     // test login 
     console.log("Input Box");
     await driver.findElement(By.id("email")).sendKeys("test@test.com");
-    await driver.findElement(By.id("pw")).sendKeys("abc123");
+    await driver.findElement(By.id("pw")).sendKeys("testtest");
     await driver.findElement(By.id("submit_login")).click();
     console.log("Logged in");
 
