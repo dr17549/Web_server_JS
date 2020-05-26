@@ -678,6 +678,7 @@ async function authenticateUser(req, res, next) {
         title: "Graphite",
         login: "active",
         message: "Wrong password.",
+        user: undefined,
       });
     }
     req.session.user = user;
