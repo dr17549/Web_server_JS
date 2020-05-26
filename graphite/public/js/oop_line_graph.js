@@ -1,5 +1,18 @@
 var line_graph = {
   append: function (data) {
+    d3.select("#colourSelect")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#LS_colour")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#linkStrength")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+    d3.select("#LS_label")
+      .style("display", "none")
+      .style("invisbility", "hidden");
+
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 30, left: 50 },
       width = 960 - margin.left - margin.right,

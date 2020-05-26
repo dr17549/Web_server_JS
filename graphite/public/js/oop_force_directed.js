@@ -14,6 +14,7 @@ var force_directed = {
     d3.select("#yAxisLabel")
       .style("display", "none")
       .style("invisbility", "hidden");
+    
     // need this to map the js object to json
     var canvas = document.querySelector("canvas"),
       context = canvas.getContext("2d"),

@@ -33,40 +33,40 @@ block content
           #viz(width="960", height="600")
             .row.align-items-center
 
-        h3(style="margin-top: 1rem") Options:
+        h3(style="margin-top: 1rem" id="label_options") Options:
         .row.align-items-center
           .col
             .d-inline-flex.justify-content-center
               .form-group.form-inline
-                label(for="#colourSelect" style="margin-right: 0.5rem") Colour: 
+                label(for="#colourSelect" style="margin-right: 0.5rem" id="LS_colour") Colour: 
                 select#colourSelect.form-control(name="colourSelect")
                   option(name="default" value="default") Default
                   option(name="red" value='red') Red
                   option(name="blue" value='blue') Blue
                   option(name="green" value='green') Green
                   option(name="random" value='random') Random
+        //- .row.align-items-center
+        //-   .col
+        //-     .d-inline-flex.justify-content-center
+        //-       .form-group.form-inline
+        //-         label(for="#xAxisTitle" id="xAxisLabel" style="margin-right: 0.5rem") X Axis Title:
+        //-         input#xAxisTitle.form-control(type="text" placeholder="X Axis" style="margin-right: 0.5rem")
+        //-         label(for="#yAxisTitle" id ="yAxisLabel" style="margin-right: 0.5rem") Y Axis Title:
+        //-         input#yAxisTitle.form-control(type="text" placeholder="Y Axis")
         .row.align-items-center
           .col
             .d-inline-flex.justify-content-center
               .form-group.form-inline
-                label(for="#xAxisTitle" id="xAxisLabel" style="margin-right: 0.5rem") X Axis Title:
-                input#xAxisTitle.form-control(type="text" placeholder="X Axis" style="margin-right: 0.5rem")
-                label(for="#yAxisTitle" id ="yAxisLabel" style="margin-right: 0.5rem") Y Axis Title:
-                input#yAxisTitle.form-control(type="text" placeholder="Y Axis")
-        .row.align-items-center
-          .col
-            .d-inline-flex.justify-content-center
-              .form-group.form-inline
-                label(for="#linkStrength" style="margin-right: 0.5rem") Link Strength:
+                label(for="#linkStrength" style="margin-right: 0.5rem" id='LS_label') Link Strength:
                 input#linkStrength.form-control(type="range" min="0" max="1" step="any" value="0.5" style="width:240px;")
-        .row.align-items-center
-          .col
-            .d-inline-flex.justify-content-center
-              p Axis labels/ticks etc
-        .row.align-items-center
-          .col
-            .d-inline-flex.justify-content-center
-              p Bar widths/spacing etc
+        //- .row.align-items-center
+        //-   .col
+        //-     .d-inline-flex.justify-content-center
+        //-       p Axis labels/ticks etc
+        //- .row.align-items-center
+        //-   .col
+        //-     .d-inline-flex.justify-content-center
+        //-       p Bar widths/spacing etc
         
       .card-footer
         .form-group(style="margin-top:0.5em")
@@ -77,7 +77,7 @@ block content
           button#saveas.btn.btn-outline-success(type='button') Save As 
             i.fas.fa-save
         .form-group(style="margin-top:0.5em; margin-bottom:0.5rem")
-          button.btn.btn-primary(type='button') Download as .PNG
+          button.btn.btn-primary(type='button' id="Download") Download as .PNG
 
   script(type="text/javascript") let data = !{JSON.stringify(data[0].story)}; let template = !{JSON.stringify(templateData[0])}; let graph = !{graphData ? JSON.stringify(graphData[0]) : "{}"};
   script(src="/js/bar.js")
