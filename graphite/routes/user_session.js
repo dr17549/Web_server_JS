@@ -642,22 +642,20 @@ async function requiresAdmin(req, res, next) {
 async function authenticateUser(req, res, next) {
   // no email supplied
   if (!req.body.email) {
-    res.render("login", {
+    return res.render("login", {
       title: "Graphite",
       login: "active",
       message: "Please enter an email.",
     });
-    return res.status(404).json({ message: "Please enter an email." });
   }
 
   //no password supplied
   if (!req.body.password) {
-    res.render("login", {
+    return res.render("login", {
       title: "Graphite",
       login: "active",
       message: "Please enter a password.",
     });
-    return res.status(404).json({ message: "Please enter a password." });
   }
 
   // search for users
@@ -665,12 +663,11 @@ async function authenticateUser(req, res, next) {
 
   // no user found
   if (user == null) {
-    res.render("login", {
+    return res.render("login", {
       title: "Graphite",
       login: "active",
       message: "Unknown user.",
     });
-    return res.status(404).json({ message: "Unknown user." });
   }
 
   // check the password matches
@@ -698,42 +695,63 @@ router.use(function (req,res,next){
     user: req.session.user,
     error: "Whoops! Something went wrong with the request."
   });
+});
+
+router.use(function (req,res,next){
   res.status(401).render("index", {
     title: "Graphite",
     home: "active",
     user: req.session.user,
     error: "You do not have permission to access this page."
   });
+});
+
+router.use(function (req,res,next){
   res.status(403).render("index", {
     title: "Graphite",
     home: "active",
     user: req.session.user,
     error: "Request forbidden!"
   });
+});
+
+router.use(function (req,res,next){
 	res.status(404).render("index", {
     title: "Graphite",
     home: "active",
     user: req.session.user,
     error: "Whoops! The resource you're looking for wasn't found."
   });
+});
+
+router.use(function (req,res,next){
   res.status(500).render("index", {
     title: "Graphite",
     home: "active",
     user: req.session.user,
     error: "Whoops! Something went wrong on our end."
   });
+});
+
+router.use(function (req,res,next){
   res.status(502).render("index", {
     title: "Graphite",
     home: "active",
     user: req.session.user,
     error: "Whoops! Something went wrong."
   });
+});
+
+router.use(function (req,res,next){
   res.status(503).render("index", {
     title: "Graphite",
     home: "active",
     user: req.session.user,
     error: "This service is unavailable."
   });
+});
+
+router.use(function (req,res,next){
   res.status(504).render("index", {
     title: "Graphite",
     home: "active",

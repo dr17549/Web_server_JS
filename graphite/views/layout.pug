@@ -22,7 +22,7 @@ html
       
       div#navbarToggler.collapse.navbar-collapse
         ul.navbar-nav.mr-auto.mt-2.mt-lg-0
-          if user
+          if user && user.user_ID >= 0
             li.nav-item(class=`${stories || ""}`)
               a.nav-link(href = '/stories') My Stories
             li.nav-item(class=`${graphs || ""}`)
@@ -38,7 +38,7 @@ html
             li.nav-item(class=`${login || ""}`)
               a.nav-link(href = '/login' id = "login") Log In              
       
-      if user
+      if user && user.user_ID >= 0
         if user.access > 0
           p(style="margin-bottom:0; margin-right:0.5rem") ADMIN
         i.fas.fa-user(style="margin-right:0.5rem")
