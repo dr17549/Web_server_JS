@@ -81,6 +81,8 @@ block content
         .form-group(style="margin-top:0.5em; margin-bottom:0.5rem")
           button.btn.btn-primary(type='button' id="Download") Download as .PNG
 
+    script(src="/js/graph_helper.js")
+
   //- data has to be passed from back-end scripts to front-end scripts like this
   script(type="text/javascript") let data = !{JSON.stringify(data[0].story)}; let template = !{JSON.stringify(templateData[0])}; let graph = !{graphData ? JSON.stringify(graphData[0]) : "{}"};
   //- a hacky solution to front-end modules
