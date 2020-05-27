@@ -50,7 +50,7 @@ var bar = {
       .attr("x", 0 - height / 2)
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("Word Count");
+      .text("Size");
 
     svg
       .append("g")
@@ -59,10 +59,7 @@ var bar = {
       .call(xAxis);
     svg
       .append("text")
-      .attr(
-        "transform",
-        "translate(" + width / 2 + " ," + (height + 27) + ")"
-      )
+      .attr("transform", "translate(" + width / 2 + " ," + (height + 27) + ")")
       .style("text-anchor", "middle")
       .text("Chapter");
     svg.append("g").attr("class", "y axis").call(yAxis);
