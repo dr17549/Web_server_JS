@@ -16,17 +16,17 @@ block content
         .d-inline-flex.justify-content-center
           input#name.form-control.form-control-lg(name="name" type="text" value=`${graphData ? graphData[0].name : templateData[0].name + " graph for " + JSON.parse(data[0].story).title}`)
       .card-body
-        h3(style="margin-top: 1rem") Data:
-        .row.align-items-center
-          .col
-            .d-inline-flex.justify-content-center
-              .form-group.form-inline
-                label(for="#dataSelect" style="margin-right: 0.5rem") Data: 
-                select#dataSelect.form-control
-                  option(name="size" value='size') Size
-                  option(name="characters" value='characters') Characters Per Chapter
-                  option(name="mentions" value='mentions') Mentions Per Chapter
-                  option(name="extra" value='extra') Extra Per Chapter
+        //- h3(style="margin-top: 1rem") Data:
+        //- .row.align-items-center
+        //-   .col
+        //-     .d-inline-flex.justify-content-center
+        //-       .form-group.form-inline
+        //-         label(for="#dataSelect" style="margin-right: 0.5rem") Data: 
+        //-         select#dataSelect.form-control
+        //-           option(name="size" value='size') Size
+        //-           option(name="characters" value='characters') Characters Per Chapter
+        //-           option(name="mentions" value='mentions') Mentions Per Chapter
+        //-           option(name="extra" value='extra') Extra Per Chapter
         if templateData[0].template_ID == 0
           canvas(width="960", height="600", id='canvas')
         else
