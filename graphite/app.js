@@ -19,6 +19,10 @@ app.use('/popper.js', express.static(__dirname + '/node_modules/popper.js/dist/'
 app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
 app.use("/d3", express.static(__dirname + "/node_modules/d3/dist"));
 
+var favicon = require('serve-favicon');
+
+app.use(favicon(__dirname + '/public/img/favicon.ico'));
+
 //connect to mongoose
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
 const db = mongoose.connection;

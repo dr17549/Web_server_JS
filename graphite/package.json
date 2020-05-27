@@ -31,7 +31,8 @@
     "popper.js": "^1.16.1",
     "pug": "^2.0.4",
     "requirejs": "^2.3.6",
-    "selenium-webdriver": "^4.0.0-alpha.7"
+    "selenium-webdriver": "^4.0.0-alpha.7",
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
