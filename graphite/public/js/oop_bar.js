@@ -57,6 +57,11 @@ var bar = {
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
+    svg
+      .append("text")
+      .attr("transform", "translate(" + width / 2 + " ," + (height + 27) + ")")
+      .style("text-anchor", "middle")
+      .text("Chapter");
     svg.append("g").attr("class", "y axis").call(yAxis);
 
     svg
@@ -132,7 +137,7 @@ var bar = {
   },
 };
 
-let get_bar_data = function(display_data) {
+let get_bar_data = function (display_data) {
   let bar_data = [];
   if (display_data.wordcount && display_data.title) {
     for (const [key, value] of Object.entries(display_data)) {
