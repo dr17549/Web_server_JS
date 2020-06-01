@@ -1,7 +1,7 @@
-# Web_tech
-Web Technologies 2019 source code
+# Graphite Website
+Our website is called ‘Graphite’, and it is a system for uploading data about works of fiction such as books and films, and then creating numerous different visualisations from that data. The main part of the website is the graphs created using D3, which can be edited and customised by the user.
 
-# How to Run (copied from report)
+# How to Run
 
 The website comes with a startup script that initialises the necessary information in a Mongo database. To run the website, you will need a Mongo database running on port 27017 with hostname “localhost”. You will also need to install Node.js and npm.
 
